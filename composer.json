@@ -13,13 +13,7 @@
         }
     ],
     "require": {
-        "alexander-a2/symfony-datasheet-bundle": "dev-main",
-        "knplabs/knp-menu": "^3.0@dev"
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../symfony-datasheet-bundle"
-        }
-    ]
+        "knplabs/knp-menu": "^3.0@dev",
+        "alexander-a2/symfony-datasheet-bundle": "dev-main"
+    }
 }

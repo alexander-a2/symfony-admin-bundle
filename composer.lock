@@ -4,31 +4,41 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b76120afaabbfdd9cf18efae5424e94c",
+    "content-hash": "57ab66214921b3d6a5b345ae3535d93e",
     "packages": [
         {
             "name": "alexander-a2/symfony-datasheet-bundle",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../symfony-datasheet-bundle",
-                "reference": "f9053083d3cdc07f0432ed05e4109d73e6ea2851"
+            "source": {
+                "type": "git",
+                "url": "https://github.com/alexander-a2/symfony-datasheet-bundle.git",
+                "reference": "d61f6d8a4e7ba33af0a73758e4bbf5efd7643d77"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/alexander-a2/symfony-datasheet-bundle/zipball/d61f6d8a4e7ba33af0a73758e4bbf5efd7643d77",
+                "reference": "d61f6d8a4e7ba33af0a73758e4bbf5efd7643d77",
+                "shasum": ""
+            },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "AlexanderA2\\SymfonyDatasheetBundle\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Alexander A2"
                 }
             ],
             "description": "Symfony Datasheet Bundle",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/alexander-a2/symfony-datasheet-bundle/issues",
+                "source": "https://github.com/alexander-a2/symfony-datasheet-bundle/tree/main"
+            },
+            "time": "2023-10-31T12:16:45+00:00"
         },
         {
             "name": "knplabs/knp-menu",
@@ -109,7 +119,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "alexander-a2/symfony-datasheet-bundle": 20
+        "knplabs/knp-menu": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
