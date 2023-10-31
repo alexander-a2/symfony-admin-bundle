@@ -1,0 +1,13 @@
+{% extends '@Admin/layout/dashboard.html.twig' %}
+
+{% block main %}
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <a href="{{ path('admin_crud_edit', {'objectClassName': objectClassName}) }}"
+               class="btn btn-success">{{ 'Create'|translate }}</a>
+        </div>
+        <div class="col-md-6 text-right">
+        </div>
+    </div>
+    {{ datasheet(objectListDatasheet) }}
+{% endblock %}

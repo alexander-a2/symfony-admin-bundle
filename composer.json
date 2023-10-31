@@ -1,0 +1,25 @@
+{
+    "name": "alexander-a2/symfony-admin-bundle",
+    "description": "Symfony Admin Bundle",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "AlexanderA2\\SymfonyAdminBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexander A2"
+        }
+    ],
+    "require": {
+        "alexander-a2/symfony-datasheet-bundle": "dev-main",
+        "knplabs/knp-menu": "^3.0@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../symfony-datasheet-bundle"
+        }
+    ]
+}

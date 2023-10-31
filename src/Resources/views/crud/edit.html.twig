@@ -1,0 +1,20 @@
+{% extends '@Admin/layout/dashboard.html.twig' %}
+
+{% block main %}
+    <div class="row mb-2">
+        <div class="col-md-6">
+            {% if objectId %}
+                <a href="{{ path('admin_crud_view', {'objectClassName': objectClassName, 'objectId': objectId}) }}"
+                   class="btn btn-secondary">&larr; {{ 'Back'|translate }}</a>
+            {% else %}
+                <a href="{{ path('admin_crud_index', {'objectClassName': objectClassName}) }}"
+                   class="btn btn-secondary">&larr; {{ 'Back'|translate }}</a>
+            {% endif %}
+        </div>
+        <div class="col-md-6 text-right">
+        </div>
+    </div>
+
+    {{ form(form) }}
+
+{% endblock %}
