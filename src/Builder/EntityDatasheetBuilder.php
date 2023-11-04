@@ -4,8 +4,8 @@ namespace AlexanderA2\SymfonyAdminBundle\Builder;
 
 use AlexanderA2\PhpDatasheet\Datasheet;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
-use AlexanderA2\PhpDatasheet\Helper\ArrayHelper;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
+use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Routing\RouterInterface;
@@ -44,12 +44,12 @@ class EntityDatasheetBuilder
         if ($primaryFieldName) {
             $datasheet
                 ->getColumn($primaryFieldName)
-                ->setHandler(function ($value, $record) use ($entityClassName, $router) {
+                ->setHandler(function ($value, $entity) use ($entityClassName, $router) {
                     return sprintf(
                         '<b><a href="%s">%s</a></b>',
                         $router->generate('admin_crud_view', [
-                            'objectClassName' => $entityClassName,
-                            'objectId' => $record['id'],
+                            'entityClassName' => $entityClassName,
+                            'entityId' => $entity->getId(),
                         ]),
                         $value,
                     );
@@ -65,18 +65,46 @@ class EntityDatasheetBuilder
         RouterInterface    $router,
     ): void {
         $relationClassName = EntityHelper::getRelationClassName($entityClassName, $fieldName, $this->entityManager);
+        $relationPrimaryAttribute = EntityHelper::getEntityPrimaryAttribute($relationClassName, $this->entityManager);
 
         if ($fieldType === EntityHelper::RELATION_FIELD_TYPES[ClassMetadataInfo::MANY_TO_ONE]) {
-            $datasheet->getColumn($fieldName)->setHandler(function ($value, $record) use ($router, $relationClassName) {
+            $datasheet->getColumn($fieldName)->setHandler(function ($entity) use ($router, $relationClassName, $relationPrimaryAttribute) {
+                if (empty($entity)) {
+                    return '';
+                }
+
                 return sprintf(
                     '<a href="%s">#%s %s</a>',
                     $router->generate('admin_crud_view', [
-                        'objectClassName' => $relationClassName,
-                        'objectId' => $record['id'],
+                        'entityClassName' => $relationClassName,
+                        'entityId' => $entity->getId(),
                     ]),
-                    $record['id'],
-                    $record[ArrayHelper::getPrimaryKey($record)],
+                    $entity->getId(),
+                    ObjectHelper::getProperty($entity, $relationPrimaryAttribute),
                 );
+            });
+        }
+
+        if ($fieldType === EntityHelper::RELATION_FIELD_TYPES[ClassMetadataInfo::MANY_TO_MANY]) {
+            $datasheet->getColumn($fieldName)->setHandler(function ($entitys) use ($router, $relationClassName, $relationPrimaryAttribute) {
+                if (empty($entitys)) {
+                    return '';
+                }
+                $links = [];
+
+                foreach($entitys as $entity){
+                    $links[] = sprintf(
+                        '<a href="%s">#%s %s</a>',
+                        $router->generate('admin_crud_view', [
+                            'entityClassName' => $relationClassName,
+                            'entityId' => $entity->getId(),
+                        ]),
+                        $entity->getId(),
+                        ObjectHelper::getProperty($entity, $relationPrimaryAttribute),
+                    );
+                }
+
+                return implode(', ', $links);
             });
         }
     }

@@ -3,8 +3,8 @@
 namespace AlexanderA2\SymfonyAdminBundle\Controller;
 
 use AlexanderA2\SymfonyAdminBundle\Builder\EntityDataBuilder;
-use AlexanderA2\SymfonyAdminBundle\Builder\EntityDatasheetBuilder;
 use AlexanderA2\SymfonyAdminBundle\Builder\FormBuilder;
+use AlexanderA2\SymfonyAdminBundle\Builder\EntityDatasheetBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,12 +22,11 @@ class CrudController extends AbstractController
         Request                $request,
         EntityDatasheetBuilder $entityDatasheetBuilder,
     ): Response {
-        $objectClassName = $request->get('objectClassName');
-
+        $entityClassName = $request->get('entityClassName');
 
         return $this->render('@Admin/crud/index.html.twig', [
-            'objectListDatasheet' => $entityDatasheetBuilder->build($objectClassName),
-            'objectClassName' => $objectClassName,
+            'entityDatasheet' => $entityDatasheetBuilder->build($entityClassName),
+            'entityClassName' => $entityClassName,
         ]);
     }
 
@@ -37,15 +36,15 @@ class CrudController extends AbstractController
         EntityManagerInterface $entityManager,
         EntityDataBuilder      $entityDataBuilder,
     ): Response {
-        $objectClassName = $request->get('objectClassName');
-        $objectId = $request->get('objectId');
-        $object = $entityManager->getRepository($objectClassName)->find($objectId);
+        $entityClassName = $request->get('entityClassName');
+        $entityId = $request->get('entityId');
+        $entity = $entityManager->getRepository($entityClassName)->find($entityId);
 
         return $this->render('@Admin/crud/view.html.twig', [
-            'object' => $object,
-            'data' => $entityDataBuilder->getData($object),
-            'objectClassName' => $objectClassName,
-            'objectId' => $objectId,
+            'entity' => $entity,
+            'data' => $entityDataBuilder->getData($entity),
+            'entityClassName' => $entityClassName,
+            'entityId' => $entityId,
         ]);
     }
 
@@ -55,40 +54,40 @@ class CrudController extends AbstractController
         EntityManagerInterface $entityManager,
         FormBuilder            $formBuilder,
     ): Response {
-        $objectClassName = $request->query->get('objectClassName');
-        $objectId = $request->query->get('objectId');
+        $entityClassName = $request->query->get('entityClassName');
+        $entityId = $request->query->get('entityId');
 
-        if ($objectId) {
-            $object = $entityManager->getRepository($objectClassName)->find($objectId);
+        if ($entityId) {
+            $entity = $entityManager->getRepository($entityClassName)->find($entityId);
         } else {
-            $object = new $objectClassName;
+            $entity = new $entityClassName;
         }
 
-        $form = $formBuilder->buildFor($object);
-        $form->setData($object);
+        $form = $formBuilder->buildFor($entity);
+        $form->setData($entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                if (!$objectId) {
-                    $entityManager->persist($object);
+                if (!$entityId) {
+                    $entityManager->persist($entity);
                 }
                 $entityManager->flush();
-                $this->addFlash('success', $objectId ? 'Record was updated' : 'Record was created');
+                $this->addFlash('success', $entityId ? 'Record was updated' : 'Record was created');
             } catch (Throwable $exception) {
                 $this->addFlash('error', 'Failed to update the record');
             }
 
             return $this->redirectToRoute('admin_crud_view', [
-                'objectClassName' => $objectClassName,
-                'objectId' => $object->getId(),
+                'entityClassName' => $entityClassName,
+                'entityId' => $entity->getId(),
             ]);
         }
 
         return $this->render('@Admin/crud/edit.html.twig', [
             'form' => $form,
-            'objectClassName' => $objectClassName,
-            'objectId' => $objectId ?? null,
+            'entityClassName' => $entityClassName,
+            'entityId' => $entityId ?? null,
         ]);
     }
 
@@ -96,14 +95,13 @@ class CrudController extends AbstractController
     public function deleteAction(
         Request                $request,
         EntityManagerInterface $entityManager,
-        FormBuilder            $formBuilder,
     ): Response {
-        $objectClassName = $request->query->get('objectClassName');
-        $objectId = $request->query->get('objectId');
-        $object = $entityManager->getRepository($objectClassName)->find($objectId);
+        $entityClassName = $request->query->get('entityClassName');
+        $entityId = $request->query->get('entityId');
+        $entity = $entityManager->getRepository($entityClassName)->find($entityId);
 
         try {
-            $entityManager->remove($object);
+            $entityManager->remove($entity);
             $entityManager->flush();
             $this->addFlash('success', 'Record was deleted');
         } catch (Throwable $exception) {
@@ -111,7 +109,7 @@ class CrudController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_crud_index', [
-            'objectClassName' => $objectClassName,
+            'entityClassName' => $entityClassName,
         ]);
     }
 }

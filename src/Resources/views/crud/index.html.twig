@@ -3,11 +3,11 @@
 {% block main %}
     <div class="row mb-2">
         <div class="col-md-6">
-            <a href="{{ path('admin_crud_edit', {'objectClassName': objectClassName}) }}"
+            <a href="{{ path('admin_crud_edit', {'entityClassName': entityClassName}) }}"
                class="btn btn-success">{{ 'Create'|translate }}</a>
         </div>
         <div class="col-md-6 text-right">
         </div>
     </div>
-    {{ datasheet(objectListDatasheet) }}
+    {{ datasheet(entityDatasheet) }}
 {% endblock %}

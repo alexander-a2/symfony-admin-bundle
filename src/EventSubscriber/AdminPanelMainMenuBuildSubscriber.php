@@ -35,7 +35,7 @@ class AdminPanelMainMenuBuildSubscriber implements EventSubscriberInterface
             $menuItem
                 ->setLabel(StringHelper::toReadable(StringHelper::getShortClassName($objectClassName)))
                 ->setUri($this->router->generate('admin_crud_index', [
-                    'objectClassName' => $objectClassName,
+                    'entityClassName' => $objectClassName,
                 ]));
         }
     }
