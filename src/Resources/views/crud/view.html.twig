@@ -4,9 +4,9 @@
     <div class="row mb-2">
         <div class="col-md-6">
             <a href="javascript:history.back()"
-               class="btn btn-secondary">&larr; {{ 'Back'|translate }}</a>
+               class="btn btn-secondary">&larr; {{ 'Back'|trans }}</a>
             <a href="{{ path('admin_crud_edit', {'entityClassName': entityClassName, 'entityId': entityId}) }}"
-               class="btn btn-primary">{{ 'Edit'|translate }}</a>
+               class="btn btn-primary">{{ 'Edit'|trans }}</a>
         </div>
         <div class="col-md-6 text-right">
             <a href="{{ path('admin_crud_delete', {'entityClassName': entityClassName, 'entityId': entityId}) }}"
@@ -16,7 +16,7 @@
     <table class="table table-bordered table-hover table-striped">
         {% for item in data %}
             <tr>
-                <td width="200"><b>{{ item.name|translate }}</b></td>
+                <td width="200"><b>{{ item.name|trans }}</b></td>
                 <td>{{ item.value }}</td>
             </tr>
         {% endfor %}

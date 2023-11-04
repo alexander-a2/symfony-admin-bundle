@@ -3,21 +3,15 @@
 namespace AlexanderA2\SymfonyAdminBundle\Twig;
 
 use AlexanderA2\PhpDatasheet\Helper\StringHelper;
-use AlexanderA2\SymfonyAdminBundle\Helper\TranslationHelper;
 use DateTimeInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
 class StringHelperExtension extends AbstractExtension
 {
-    public function __construct(protected TranslationHelper $translationHelper)
-    {
-    }
-
     public function getFilters(): array
     {
         return [
-            new TwigFilter('translate', [$this, 'translate']),
             new TwigFilter('readable', [$this, 'readable']),
             new TwigFilter('readableTitle', [$this, 'getReadableTitle']),
             new TwigFilter('urlize', [$this, 'urlize']),

@@ -8,20 +8,31 @@ use Knp\Menu\ItemInterface;
 use Knp\Menu\MenuFactory;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuBuilder
 {
+    private const HOME_PAGE_ITEM_NAME = 'homepage';
+    private const ADMIN_PAGE_ITEM_NAME = 'admin_panel';
+
     public function __construct(
         protected EventDispatcherInterface $eventDispatcher,
         protected RouterInterface          $router,
+        protected TranslatorInterface      $translator,
     ) {
     }
 
     public function build(string $name): ItemInterface
     {
-        $factory = new MenuFactory();
-        $menu = $factory->createItem($name);
-        $menu->addChild('Home', ['uri' => $this->router->generate('admin_index')]);
+        $menu = (new MenuFactory())->createItem($name);
+
+        $menu->addChild(self::HOME_PAGE_ITEM_NAME)
+            ->setLabel($this->translator->trans('admin.main_menu.' . self::HOME_PAGE_ITEM_NAME))
+            ->setUri('/');
+        $menu->addChild(self::ADMIN_PAGE_ITEM_NAME)
+            ->setLabel($this->translator->trans('admin.main_menu.' . self::ADMIN_PAGE_ITEM_NAME))
+            ->setUri($this->router->generate('admin_index'));
+
         $event = new MenuBuildEvent($menu);
         $this->eventDispatcher->dispatch($event);
 

@@ -1,0 +1,9 @@
+admin:
+  main_menu:
+    homepage: 'На главную'
+    admin_panel: 'Администрирование'
+    database: 'База данных'
+    locale: 'Язык'
+  locale:
+    ru: 'Русский'
+    en: 'Английский'
