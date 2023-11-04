@@ -36,7 +36,7 @@
 <header>
     <nav class="navbar navbar-expand-md fixed-top {% block header_nav_style_classes %}bg-primary navbar-dark{% endblock %}">
         <div class="container-fluid px-1">
-            <a class="navbar-brand" href="#">{% block header_brand %}Admin Panel{% endblock %}</a>
+            <a class="navbar-brand" href="#">{% block header_brand %}{{ 'admin.name'|trans }}{% endblock %}</a>
             <button id="admin_sidebar_toggle_control" class="navbar-toggler p-2" data-bs-toggle="collapse"
                     href="#collapseExample" role="button"
                     aria-expanded="false" aria-controls="collapseExample">

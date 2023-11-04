@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormBuilder
 {
@@ -36,6 +37,7 @@ class FormBuilder
         protected RouterInterface          $router,
         protected EventDispatcherInterface $eventDispatcher,
         protected EntityManagerInterface   $entityManager,
+        protected TranslatorInterface      $translator,
     ) {
     }
 
@@ -60,7 +62,7 @@ class FormBuilder
             $formBuilder->add($fieldName, $type, $options);
         }
         $formBuilder->add('submit', SubmitType::class, [
-            'label' => 'Save',
+            'label' => 'admin.controls.save',
         ]);
 
         return $formBuilder->getForm();

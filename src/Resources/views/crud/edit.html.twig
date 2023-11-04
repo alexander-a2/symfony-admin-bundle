@@ -4,14 +4,12 @@
     <div class="row mb-2">
         <div class="col-md-6">
             <a href="javascript:history.back()"
-               class="btn btn-secondary">&larr; {{ 'Back'|translate }}</a>
-            {#            <a href="{{ path('admin_crud_edit', {'entityClassName': entityClassName, 'entityId': entityId}) }}" #}
-            {#               class="btn btn-primary">{{ 'Edit'|translate }}</a> #}
+               class="btn btn-secondary">&larr; {{ 'admin.controls.back'|trans }}</a>
         </div>
         <div class="col-md-6 text-right">
             <a href="{{ path('admin_crud_delete', {'entityClassName': entityClassName, 'entityId': entityId}) }}"
                class="btn btn-danger"
-               onClick="if(!confirm('Are you sure?')){return false;}">{{ 'Delete'|trans }}</a>
+               onClick="if(!confirm('Are you sure?')){return false;}">{{ 'admin.controls.delete'|trans }}</a>
         </div>
     </div>
 

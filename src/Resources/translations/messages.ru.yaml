@@ -1,9 +1,18 @@
 admin:
+  name: 'Админ панель'
   main_menu:
-    homepage: 'На главную'
-    admin_panel: 'Администрирование'
+    homepage: 'Домашняя страница'
+    admin_panel: 'Админ панель'
     database: 'База данных'
     locale: 'Язык'
   locale:
     ru: 'Русский'
     en: 'Английский'
+  controls:
+    add: 'Добавить'
+    edit: 'Правка'
+    back: 'Назад'
+    delete: 'Удалить'
+    save: 'Сохранить'
+  confirm:
+    are_you_sure: 'Вы уверены'
