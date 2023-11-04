@@ -6,15 +6,20 @@ use AlexanderA2\PhpDatasheet\Datasheet;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
+use AlexanderA2\PhpDatasheet\Helper\StringHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EntityDatasheetBuilder
 {
+    private const FIELD_TITLE_PREFIX = 'entity';
+
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected RouterInterface        $router,
+        protected TranslatorInterface    $translator,
     ) {
     }
 
@@ -22,8 +27,16 @@ class EntityDatasheetBuilder
     {
         $datasheet = new Datasheet($this->entityManager->getRepository($entityClassName));
         $this->addLinkToPrimaryField($datasheet, $entityClassName, $this->router);
+        $fieldTitlePrefix = implode('.', [
+            self::FIELD_TITLE_PREFIX,
+            StringHelper::toSnakeCase(StringHelper::getShortClassName($entityClassName)),
+            'field',
+        ]);
 
         foreach (EntityHelper::getEntityFields($entityClassName, $this->entityManager) as $fieldName => $fieldType) {
+            $datasheet->getColumn($fieldName)
+                ->setTitle($this->translator->trans($fieldTitlePrefix . '.' . StringHelper::toSnakeCase($fieldName)));
+
             if (in_array($fieldType, EntityHelper::RELATION_FIELD_TYPES)) {
                 $this->addLinkToRelationField($datasheet, $entityClassName, $fieldName, $fieldType, $this->router);
             }
@@ -92,7 +105,7 @@ class EntityDatasheetBuilder
                 }
                 $links = [];
 
-                foreach($entitys as $entity){
+                foreach ($entitys as $entity) {
                     $links[] = sprintf(
                         '<a href="%s">#%s %s</a>',
                         $router->generate('admin_crud_view', [

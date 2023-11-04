@@ -3,9 +3,9 @@
 namespace AlexanderA2\SymfonyAdminBundle\EventSubscriber;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
+use AlexanderA2\PhpDatasheet\Helper\StringHelper;
 use AlexanderA2\SymfonyAdminBundle\AdminBundle;
 use AlexanderA2\SymfonyAdminBundle\Event\MenuBuildEvent;
-use AlexanderA2\SymfonyAdminBundle\Helper\StringHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\RouterInterface;
