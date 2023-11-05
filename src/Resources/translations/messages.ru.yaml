@@ -16,3 +16,13 @@ admin:
     save: 'Сохранить'
   confirm:
     are_you_sure: 'Вы уверены'
+  entity:
+    crud:
+      record_was_created: 'Запись добавлена'
+      record_was_updated: 'Запись обновлена'
+      record_was_deleted: 'Запись удалена'
+    field:
+      id: '№'
+      created_at: 'Дата создания'
+      updated_at: 'Дата обновления'
+  something_went_wrong: 'Произошла ошибка'

@@ -73,9 +73,9 @@ class CrudController extends AbstractController
                     $entityManager->persist($entity);
                 }
                 $entityManager->flush();
-                $this->addFlash('success', $entityId ? 'Record was updated' : 'Record was created');
+                $this->addFlash('success', $entityId ? 'admin.entity.crud.record_was_updated' : 'admin.entity.crud.record_was_created');
             } catch (Throwable $exception) {
-                $this->addFlash('error', 'Failed to update the record');
+                $this->addFlash('error', 'admin.something_went_wrong');
             }
 
             return $this->redirectToRoute('admin_crud_view', [
@@ -103,9 +103,9 @@ class CrudController extends AbstractController
         try {
             $entityManager->remove($entity);
             $entityManager->flush();
-            $this->addFlash('success', 'Record was deleted');
+            $this->addFlash('success', 'admin.entity.crud.record_was_deleted');
         } catch (Throwable $exception) {
-            $this->addFlash('error', 'Failed to delete the record');
+            $this->addFlash('error', 'admin.something_went_wrong');
         }
 
         return $this->redirectToRoute('admin_crud_index', [

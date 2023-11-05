@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AlexanderA2\SymfonyAdminBundle\Builder;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
+use AlexanderA2\SymfonyAdminBundle\Helper\EntityTranslationHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -38,16 +39,19 @@ class FormBuilder
         protected EventDispatcherInterface $eventDispatcher,
         protected EntityManagerInterface   $entityManager,
         protected TranslatorInterface      $translator,
+        protected EntityHelper             $entityHelper,
+        protected EntityTranslationHelper  $entityTranslationHelper,
     ) {
     }
 
     public function buildFor(mixed $object): FormInterface
     {
+        $entityClassName = get_class($object);
         $formBuilder = $this->formFactory->createBuilder(FormType::class, $object, [
             'data_class' => get_class($object),
             'csrf_protection' => false,
         ]);
-        foreach (EntityHelper::getEntityFields(get_class($object), $this->entityManager) as $fieldName => $fieldType) {
+        foreach ($this->entityHelper->getEntityFields($entityClassName) as $fieldName => $fieldType) {
             if (in_array($fieldName, self::FIELDS_NOT_FOR_EDIT)) {
                 continue;
             }
@@ -57,7 +61,7 @@ class FormBuilder
             }
             $type = self::FORM_FIELDS_MAPPING[$fieldType] ?? null;
             $options = array_merge([
-                'label' => $fieldName,
+                'label' => $this->entityTranslationHelper->getFieldTranslationId($entityClassName, $fieldName),
             ], $this->getFieldSpecificOptions($fieldName, $fieldType, $object));
             $formBuilder->add($fieldName, $type, $options);
         }
@@ -77,12 +81,7 @@ class FormBuilder
         }
 
         if (in_array($fieldType, ['many_to_one', 'many_to_many'])) {
-            $relationClassName = EntityHelper::getRelationClassName(
-                get_class($object),
-                $fieldName,
-                $this->entityManager,
-            );
-
+            $relationClassName = $this->entityHelper->getRelationClassName(get_class($object), $fieldName);
             $options = [
                 'class' => $relationClassName,
                 'empty_data' => null,
@@ -93,7 +92,7 @@ class FormBuilder
             ];
 
             if (!method_exists($relationClassName, '__toString')) {
-                $options['choice_label'] = EntityHelper::getEntityPrimaryAttribute(
+                $options['choice_label'] = $this->entityHelper->getEntityPrimaryAttribute(
                     $relationClassName,
                     $this->entityManager,
                 ) ?? 'id';

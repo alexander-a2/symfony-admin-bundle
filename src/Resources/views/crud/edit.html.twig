@@ -7,9 +7,11 @@
                class="btn btn-secondary">&larr; {{ 'admin.controls.back'|trans }}</a>
         </div>
         <div class="col-md-6 text-right">
-            <a href="{{ path('admin_crud_delete', {'entityClassName': entityClassName, 'entityId': entityId}) }}"
-               class="btn btn-danger"
-               onClick="if(!confirm('Are you sure?')){return false;}">{{ 'admin.controls.delete'|trans }}</a>
+            {% if entityId %}
+                <a href="{{ path('admin_crud_delete', {'entityClassName': entityClassName, 'entityId': entityId}) }}"
+                   class="btn btn-danger"
+                   onClick="if(!confirm('Are you sure?')){return false;}">{{ 'admin.controls.delete'|trans }}</a>
+            {% endif %}
         </div>
     </div>
 
@@ -19,29 +21,9 @@
             <tr>
                 <td width="200"><b>{{ form_label(child) }}</b></td>
                 <td>{{ form_widget(child) }}</td>
-{#                <td>{{ item.value }}</td>#}
             </tr>
         {% endfor %}
     </table>
     {{ form_end(form) }}
 
 {% endblock %}
-
-{# {% block main %} #}
-{#    <div class="row mb-2"> #}
-{#        <div class="col-md-6"> #}
-{#            {% if entityId %} #}
-{#                <a href="{{ path('admin_crud_view', {'entityClassName': entityClassName, 'entityId': entityId}) }}" #}
-{#                   class="btn btn-secondary">&larr; {{ 'Back'|translate }}</a> #}
-{#            {% else %} #}
-{#                <a href="{{ path('admin_crud_index', {'entityClassName': entityClassName}) }}" #}
-{#                   class="btn btn-secondary">&larr; {{ 'Back'|translate }}</a> #}
-{#            {% endif %} #}
-{#        </div> #}
-{#        <div class="col-md-6 text-right"> #}
-{#        </div> #}
-{#    </div> #}
-{# #}
-{#    {{ form(form) }} #}
-{# #}
-{# {% endblock %} #}

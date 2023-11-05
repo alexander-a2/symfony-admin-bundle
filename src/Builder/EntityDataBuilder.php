@@ -4,22 +4,26 @@ namespace AlexanderA2\SymfonyAdminBundle\Builder;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
+use AlexanderA2\SymfonyAdminBundle\Helper\EntityTranslationHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EntityDataBuilder
 {
     public function __construct(
-        protected EntityManagerInterface $entityManager,
+        protected EntityManagerInterface  $entityManager,
+        protected EntityHelper            $entityHelper,
+        protected EntityTranslationHelper $entityTranslationHelper,
     ) {
     }
 
     public function getData($object): array
     {
         $data = [];
+        $entityClassName = get_class($object);
 
-        foreach (EntityHelper::getEntityFields(get_class($object), $this->entityManager) as $fieldName => $fieldType) {
+        foreach ($this->entityHelper->getEntityFields($entityClassName) as $fieldName => $fieldType) {
             $data[] = [
-                'name' => $fieldName,
+                'name' => $this->entityTranslationHelper->getTranslatedFieldName($entityClassName, $fieldName),
                 'value' => $this->getReadableValue($object, $fieldName, $fieldType),
             ];
         }

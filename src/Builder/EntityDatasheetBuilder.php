@@ -6,36 +6,30 @@ use AlexanderA2\PhpDatasheet\Datasheet;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
-use AlexanderA2\PhpDatasheet\Helper\StringHelper;
+use AlexanderA2\SymfonyAdminBundle\Helper\EntityTranslationHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EntityDatasheetBuilder
 {
-    private const FIELD_TITLE_PREFIX = 'entity';
-
     public function __construct(
-        protected EntityManagerInterface $entityManager,
-        protected RouterInterface        $router,
-        protected TranslatorInterface    $translator,
+        protected EntityManagerInterface  $entityManager,
+        protected RouterInterface         $router,
+        protected EntityTranslationHelper $entityTranslationHelper,
+        protected EntityHelper            $entityHelper,
     ) {
     }
 
-    public function build($entityClassName): DatasheetInterface
-    {
+    public function build(
+        string $entityClassName,
+    ): DatasheetInterface {
         $datasheet = new Datasheet($this->entityManager->getRepository($entityClassName));
         $this->addLinkToPrimaryField($datasheet, $entityClassName, $this->router);
-        $fieldTitlePrefix = implode('.', [
-            self::FIELD_TITLE_PREFIX,
-            StringHelper::toSnakeCase(StringHelper::getShortClassName($entityClassName)),
-            'field',
-        ]);
-
-        foreach (EntityHelper::getEntityFields($entityClassName, $this->entityManager) as $fieldName => $fieldType) {
-            $datasheet->getColumn($fieldName)
-                ->setTitle($this->translator->trans($fieldTitlePrefix . '.' . StringHelper::toSnakeCase($fieldName)));
+        foreach ($this->entityHelper->getEntityFields($entityClassName) as $fieldName => $fieldType) {
+            $datasheet->getColumn($fieldName)->setTitle(
+                $this->entityTranslationHelper->getTranslatedFieldName($entityClassName, $fieldName),
+            );
 
             if (in_array($fieldType, EntityHelper::RELATION_FIELD_TYPES)) {
                 $this->addLinkToRelationField($datasheet, $entityClassName, $fieldName, $fieldType, $this->router);
@@ -51,7 +45,7 @@ class EntityDatasheetBuilder
         RouterInterface    $router
     ): void {
         $primaryFieldName = EntityHelper::guessPrimaryFieldName(
-            EntityHelper::getEntityFields($entityClassName, $this->entityManager),
+            $this->entityHelper->getEntityFields($entityClassName),
         );
 
         if ($primaryFieldName) {
@@ -77,8 +71,8 @@ class EntityDatasheetBuilder
         string             $fieldType,
         RouterInterface    $router,
     ): void {
-        $relationClassName = EntityHelper::getRelationClassName($entityClassName, $fieldName, $this->entityManager);
-        $relationPrimaryAttribute = EntityHelper::getEntityPrimaryAttribute($relationClassName, $this->entityManager);
+        $relationClassName = $this->entityHelper->getRelationClassName($entityClassName, $fieldName);
+        $relationPrimaryAttribute = $this->entityHelper->getEntityPrimaryAttribute($relationClassName);
 
         if ($fieldType === EntityHelper::RELATION_FIELD_TYPES[ClassMetadataInfo::MANY_TO_ONE]) {
             $datasheet->getColumn($fieldName)->setHandler(function ($entity) use ($router, $relationClassName, $relationPrimaryAttribute) {
