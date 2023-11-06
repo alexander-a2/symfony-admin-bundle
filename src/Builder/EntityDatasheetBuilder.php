@@ -6,18 +6,21 @@ use AlexanderA2\PhpDatasheet\Datasheet;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
+use AlexanderA2\SymfonyAdminBundle\Event\EntityDatasheetBuildEvent;
 use AlexanderA2\SymfonyAdminBundle\Helper\EntityTranslationHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EntityDatasheetBuilder
 {
     public function __construct(
-        protected EntityManagerInterface  $entityManager,
-        protected RouterInterface         $router,
-        protected EntityTranslationHelper $entityTranslationHelper,
-        protected EntityHelper            $entityHelper,
+        protected EntityManagerInterface   $entityManager,
+        protected RouterInterface          $router,
+        protected EntityTranslationHelper  $entityTranslationHelper,
+        protected EntityHelper             $entityHelper,
+        protected EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -26,6 +29,7 @@ class EntityDatasheetBuilder
     ): DatasheetInterface {
         $datasheet = new Datasheet($this->entityManager->getRepository($entityClassName));
         $this->addLinkToPrimaryField($datasheet, $entityClassName, $this->router);
+
         foreach ($this->entityHelper->getEntityFields($entityClassName) as $fieldName => $fieldType) {
             $datasheet->getColumn($fieldName)->setTitle(
                 $this->entityTranslationHelper->getTranslatedFieldName($entityClassName, $fieldName),
@@ -35,6 +39,7 @@ class EntityDatasheetBuilder
                 $this->addLinkToRelationField($datasheet, $entityClassName, $fieldName, $fieldType, $this->router);
             }
         }
+        $this->eventDispatcher->dispatch(new EntityDatasheetBuildEvent($entityClassName, $datasheet));
 
         return $datasheet;
     }
