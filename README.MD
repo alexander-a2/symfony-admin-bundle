@@ -5,8 +5,8 @@
 1.Register bundle
 
 add lines
-`AlexanderA2\SymfonyAdminBundle\AdminBundle::class => ['dev' => true],
-AlexanderA2\SymfonyDatasheetBundle\DatasheetBundle::class => ['dev' => true],`
+`AlexanderA2\SymfonyAdminBundle\AdminBundle::class => ['all' => true],
+AlexanderA2\SymfonyDatasheetBundle\DatasheetBundle::class => ['all' => true],`
 to file
 `config/bundles.php`
 
@@ -45,3 +45,5 @@ configure it in `config/packages/stof_doctrine_extensions.yaml`
             timestampable: true
             tree: true`
 (and use `use TimestampableEntity;` in almost every entity
+
+2. Use bootstrap forms for twig
