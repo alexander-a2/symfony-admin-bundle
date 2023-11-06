@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AlexanderA2\SymfonyAdminBundle\Builder;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
+use AlexanderA2\SymfonyAdminBundle\Event\EntityFormBuildEvent;
 use AlexanderA2\SymfonyAdminBundle\Helper\EntityTranslationHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -17,7 +18,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class FormBuilder
+class EntityFormBuilder
 {
     private const FORM_FIELDS_MAPPING = [
         'date' => DateType::class,
@@ -35,16 +36,13 @@ class FormBuilder
 
     public function __construct(
         protected FormFactoryInterface     $formFactory,
-        protected RouterInterface          $router,
         protected EventDispatcherInterface $eventDispatcher,
-        protected EntityManagerInterface   $entityManager,
-        protected TranslatorInterface      $translator,
         protected EntityHelper             $entityHelper,
         protected EntityTranslationHelper  $entityTranslationHelper,
     ) {
     }
 
-    public function buildFor(mixed $object): FormInterface
+    public function get(mixed $object): FormInterface
     {
         $entityClassName = get_class($object);
         $formBuilder = $this->formFactory->createBuilder(FormType::class, $object, [
@@ -68,6 +66,7 @@ class FormBuilder
         $formBuilder->add('submit', SubmitType::class, [
             'label' => 'admin.controls.save',
         ]);
+        $this->eventDispatcher->dispatch(new EntityFormBuildEvent($entityClassName, $formBuilder));
 
         return $formBuilder->getForm();
     }
@@ -92,10 +91,8 @@ class FormBuilder
             ];
 
             if (!method_exists($relationClassName, '__toString')) {
-                $options['choice_label'] = $this->entityHelper->getEntityPrimaryAttribute(
-                    $relationClassName,
-                    $this->entityManager,
-                ) ?? 'id';
+                $options['choice_label'] = $this->entityHelper
+                    ->getEntityPrimaryAttribute($relationClassName) ?? 'id';
             }
 
             if ($fieldType === 'many_to_many') {

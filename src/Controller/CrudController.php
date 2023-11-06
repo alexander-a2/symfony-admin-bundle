@@ -3,7 +3,7 @@
 namespace AlexanderA2\SymfonyAdminBundle\Controller;
 
 use AlexanderA2\SymfonyAdminBundle\Builder\EntityDataBuilder;
-use AlexanderA2\SymfonyAdminBundle\Builder\FormBuilder;
+use AlexanderA2\SymfonyAdminBundle\Builder\EntityFormBuilder;
 use AlexanderA2\SymfonyAdminBundle\Builder\EntityDatasheetBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,7 +52,7 @@ class CrudController extends AbstractController
     public function editAction(
         Request                $request,
         EntityManagerInterface $entityManager,
-        FormBuilder            $formBuilder,
+        EntityFormBuilder      $formBuilder,
     ): Response {
         $entityClassName = $request->query->get('entityClassName');
         $entityId = $request->query->get('entityId');
@@ -63,7 +63,7 @@ class CrudController extends AbstractController
             $entity = new $entityClassName;
         }
 
-        $form = $formBuilder->buildFor($entity);
+        $form = $formBuilder->get($entity);
         $form->setData($entity);
         $form->handleRequest($request);
 

@@ -53,12 +53,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/alexander-a2/symfony-datasheet-bundle.git",
-                "reference": "038851e2fbb45985c22290932a331222d1af0c5f"
+                "reference": "937eb725380b8ccdd21a6f4ce5aaa99cdb0fb049"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alexander-a2/symfony-datasheet-bundle/zipball/038851e2fbb45985c22290932a331222d1af0c5f",
-                "reference": "038851e2fbb45985c22290932a331222d1af0c5f",
+                "url": "https://api.github.com/repos/alexander-a2/symfony-datasheet-bundle/zipball/937eb725380b8ccdd21a6f4ce5aaa99cdb0fb049",
+                "reference": "937eb725380b8ccdd21a6f4ce5aaa99cdb0fb049",
                 "shasum": ""
             },
             "require": {
@@ -82,7 +82,7 @@
                 "issues": "https://github.com/alexander-a2/symfony-datasheet-bundle/issues",
                 "source": "https://github.com/alexander-a2/symfony-datasheet-bundle/tree/main"
             },
-            "time": "2023-11-06T12:34:27+00:00"
+            "time": "2023-11-06T13:15:41+00:00"
         },
         {
             "name": "doctrine/cache",
