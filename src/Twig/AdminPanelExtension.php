@@ -16,19 +16,19 @@ class AdminPanelExtension extends AbstractExtension
     ) {
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
-            new TwigFunction('getAdminPanelMainMenu', [$this, 'renderAdminPanelMainMenu'], ['is_safe' => ['html']]),
+            new TwigFunction('menu', [$this, 'getMenu'], ['is_safe' => ['html']]),
         ];
     }
 
-    public function renderAdminPanelMainMenu(): string
+    public function getMenu(string $name): string
     {
         $renderer = new ListRenderer(new Matcher());
 
         return $renderer->render(
-            $this->menuBuilder->build(AdminBundle::MAIN_MENU_NAME),
+            $this->menuBuilder->build($name),
         );
     }
 }

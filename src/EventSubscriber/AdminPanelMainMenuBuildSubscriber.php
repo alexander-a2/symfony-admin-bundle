@@ -16,6 +16,8 @@ class AdminPanelMainMenuBuildSubscriber implements EventSubscriberInterface
 {
     private const MENU_ENTITY_LIST_GROUP_TITLE = 'database';
     private const MENU_LOCALE_GROUP_TITLE = 'locale';
+    private const HOME_PAGE_ITEM_NAME = 'homepage';
+    private const ADMIN_PAGE_ITEM_NAME = 'admin_panel';
 
     public function __construct(
         protected RouterInterface        $router,
@@ -30,6 +32,15 @@ class AdminPanelMainMenuBuildSubscriber implements EventSubscriberInterface
         if ($event->getMenu()->getName() !== AdminBundle::MAIN_MENU_NAME) {
             return;
         }
+
+        $event->getMenu()->addChild(self::HOME_PAGE_ITEM_NAME)
+            ->setLabel($this->translator->trans('admin.main_menu.' . self::HOME_PAGE_ITEM_NAME))
+            ->setUri('/');
+
+        $event->getMenu()->addChild(self::ADMIN_PAGE_ITEM_NAME)
+            ->setLabel($this->translator->trans('admin.main_menu.' . self::ADMIN_PAGE_ITEM_NAME))
+            ->setUri($this->router->generate('admin_index'));
+
         $event->getMenu()->addChild(self::MENU_ENTITY_LIST_GROUP_TITLE, [
             'label' => $this->translator->trans('admin.main_menu.' . self::MENU_ENTITY_LIST_GROUP_TITLE)
         ]);
