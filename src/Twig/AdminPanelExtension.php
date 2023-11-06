@@ -2,7 +2,6 @@
 
 namespace AlexanderA2\SymfonyAdminBundle\Twig;
 
-use AlexanderA2\SymfonyAdminBundle\AdminBundle;
 use AlexanderA2\SymfonyAdminBundle\Builder\MenuBuilder;
 use Knp\Menu\Matcher\Matcher;
 use Knp\Menu\Renderer\ListRenderer;
@@ -20,6 +19,7 @@ class AdminPanelExtension extends AbstractExtension
     {
         return [
             new TwigFunction('menu', [$this, 'getMenu'], ['is_safe' => ['html']]),
+            new TwigFunction('menuItems', [$this, 'getMenuItems'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -30,5 +30,10 @@ class AdminPanelExtension extends AbstractExtension
         return $renderer->render(
             $this->menuBuilder->build($name),
         );
+    }
+
+    public function getMenuItems(string $name): array
+    {
+        return $this->menuBuilder->build($name)->getChildren();
     }
 }
