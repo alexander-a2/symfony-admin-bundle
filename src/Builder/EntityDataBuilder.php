@@ -4,8 +4,11 @@ namespace AlexanderA2\SymfonyAdminBundle\Builder;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
+use AlexanderA2\SymfonyAdminBundle\Event\EntityDataBuildEvent;
+use AlexanderA2\SymfonyAdminBundle\Event\EntityDatasheetBuildEvent;
 use AlexanderA2\SymfonyAdminBundle\Helper\EntityTranslationHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EntityDataBuilder
 {
@@ -13,6 +16,7 @@ class EntityDataBuilder
         protected EntityManagerInterface  $entityManager,
         protected EntityHelper            $entityHelper,
         protected EntityTranslationHelper $entityTranslationHelper,
+        protected EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -27,8 +31,10 @@ class EntityDataBuilder
                 'value' => $this->getReadableValue($object, $fieldName, $fieldType),
             ];
         }
+        $event = new EntityDataBuildEvent($object, $data);
+        $this->eventDispatcher->dispatch($event);
 
-        return $data;
+        return $event->getData();
     }
 
     public function getReadableValue(mixed $object, string $fieldName, string $fieldType): string
