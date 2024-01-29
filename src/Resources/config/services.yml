@@ -8,6 +8,3 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Tests/'
-
-    AlexanderA2\SymfonyAdminBundle\Translation\Translator:
-        decorates: translator

@@ -31,10 +31,6 @@ class EntityDatasheetBuilder
         $this->addLinkToPrimaryField($datasheet, $entityClassName, $this->router);
 
         foreach ($this->entityHelper->getEntityFields($entityClassName) as $fieldName => $fieldType) {
-            $datasheet->getColumn($fieldName)->setTitle(
-                $this->entityTranslationHelper->getTranslatedFieldName($entityClassName, $fieldName),
-            );
-
             if (in_array($fieldType, EntityHelper::RELATION_FIELD_TYPES)) {
                 $this->addLinkToRelationField($datasheet, $entityClassName, $fieldName, $fieldType, $this->router);
             }
