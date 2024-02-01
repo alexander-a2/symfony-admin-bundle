@@ -34,22 +34,22 @@ class AdminPanelMainMenuBuildSubscriber implements EventSubscriberInterface
         }
 
         $event->getMenu()->addChild(self::HOME_PAGE_ITEM_NAME)
-            ->setLabel($this->translator->trans('admin.main_menu.' . self::HOME_PAGE_ITEM_NAME))
+            ->setLabel(self::HOME_PAGE_ITEM_NAME)
             ->setUri('/');
 
         $event->getMenu()->addChild(self::ADMIN_PAGE_ITEM_NAME)
-            ->setLabel($this->translator->trans('admin.main_menu.' . self::ADMIN_PAGE_ITEM_NAME))
+            ->setLabel(self::ADMIN_PAGE_ITEM_NAME)
             ->setUri($this->router->generate('admin_index'));
 
         $event->getMenu()->addChild(self::MENU_ENTITY_LIST_GROUP_TITLE, [
-            'label' => $this->translator->trans('admin.main_menu.' . self::MENU_ENTITY_LIST_GROUP_TITLE)
+            'label' => self::MENU_ENTITY_LIST_GROUP_TITLE,
         ]);
 
         foreach (EntityHelper::getEntityList($this->entityManager) as $objectClassName) {
             $event->getMenu()
                 ->getChild(self::MENU_ENTITY_LIST_GROUP_TITLE)
                 ->addChild($objectClassName)
-                ->setLabel($this->translator->trans('entity.' . StringHelper::toSnakeCase(StringHelper::getShortClassName($objectClassName)) . '.name_plural'))
+                ->setLabel(StringHelper::getShortClassName($objectClassName))
                 ->setUri($this->router->generate('admin_crud_index', [
                     'entityClassName' => $objectClassName,
                 ]));
