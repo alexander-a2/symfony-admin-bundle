@@ -11,9 +11,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route("admin/", name: "admin_")]
 class AdminController extends AbstractController
 {
+
     #[Route("", name: "index")]
     public function indexAction(): Response
     {
         return $this->render('@Admin/index.html.twig');
+    }
+
+    #[Route("demo", name: "demo")]
+    public function demoAction(): Response
+    {
+        return $this->render('@Admin/demo.html.twig');
     }
 }
