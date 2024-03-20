@@ -1,0 +1,33 @@
+{% extends '@Admin/layout/dashboard.html.twig' %}
+
+{% block meta_title %}
+    A2 Symfony Boilerplate
+{% endblock %}
+
+{% block navbar_brand_title %}
+    A2 Symfony Boilerplate
+{% endblock %}
+
+{% block page_sidebar %}
+    <div class="py-4 px-3">
+        <div class="px-2 py-1 text-muted"><b><i class="bi bi-layout-wtf mx-1"></i>Views & Design</b></div>
+        <div><a href="/development/views/templates-and-layouts"
+                class="btn btn-light text-dark mx-3 px-3 py-1 shadow-none">Templates & Layouts</a></div>
+        <div><a href="/development/views/bootstrap-cheatsheet"
+                class="btn btn-light text-dark mx-3 px-3 py-1 shadow-none">Bootstrap cheatsheet</a></div>
+    </div>
+{% endblock %}
+
+{% block page_body %}
+    <div class="row">
+        <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 py-5 px-4">
+            <h3 class="mb-5">{% block page_title %}{% endblock %}</h3>
+            {% block page_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/admin/libs/javascript.plugins.js') }}"></script>
+{% endblock %}

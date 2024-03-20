@@ -1,0 +1,26 @@
+{% extends '@Admin/knp_menu.html.twig' %}
+{# {% extends '@KnpMenu/knp_menu_ordered.html.twig' %} #}
+{# {% extends '../vendor/knplabs/knp-menu/src/Knp/Menu/Resources/views/knp_menu_ordered.html.twig' %} #}
+
+{% block list %}
+
+    {% if not item.parent.parent ?? false %}
+        {{ block('children') }}
+    {% endif %}
+
+{% endblock %}
+
+{% block item %}
+
+    {% if item.parent.parent %}
+
+        {# Level-2 items #}
+        <div><a href="#" class="btn btn-light text-dark mx-3 px-3 py-1 shadow-none">{{ item.label }}</a></div>
+    {% else %}
+
+        {# Level-1 items #}
+        <div class="px-2 py-1"><i class="bi bi-apple mx-1"></i> {{ item.label }}</div>
+        {{ block('list') }}
+
+    {% endif %}
+{% endblock %}

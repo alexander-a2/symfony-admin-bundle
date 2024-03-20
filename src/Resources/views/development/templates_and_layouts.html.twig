@@ -1,0 +1,65 @@
+{% extends '@Admin/development/layout.html.twig' %}
+
+{% block page_title %}
+    Templates and layouts
+{% endblock %}
+
+{% block page_content %}
+    <h5>Out of the box</h5>
+    <p>
+        There are few layouts, that you can use and easily customize.<br>
+        To keep everything clean and simple they were made with Bootstrap only, without any additional customization or stylesheets. <br><br>
+        Available layouts are:
+    </p>
+    <div class="row row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        <div class="col">
+            <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Dashboard layout</h5>
+                    <p class="card-text">This layout would fit best for admin panel, back office etc. It has header,
+                        sidebar for big menu, body and footer</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Centered layout</h5>
+                    <p class="card-text">This layout would fit best for login pages, 404-pages etc. It has centered
+                        block only.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mt-5">How to use it</h5>
+    <p>
+    <ul>
+        <li>Create template my-layout.html.twig which extends desired template</li>
+        <li>Override all the blocks with data. You can slightly change design. Also include menu into sidebar (for
+            dashboard)
+        </li>
+        <li>Let your pages extend your created my-layout.html.twig and just fill page_content, page_title, breadcrums
+            etc.
+        </li>
+    </ul>
+    </p>
+
+    <h5 class="mt-5">Available components</h5>
+    <p>
+        Next components were used to satisfy all basic needs:
+    <ul>
+        <li>Bootstrap 5 <a href="https://getbootstrap.com/docs/5.0"><i class="bi bi-link-45deg"></i></a></li>
+        <ul>
+            <li>Bootstrap icons <a href="https://icons.getbootstrap.com/"><i class="bi bi-link-45deg"></i></a></li>
+            <li>Bootstrap select <a href="https://developer.snapappointments.com/bootstrap-select"><i class="bi bi-link-45deg"></i></a></li>
+        </ul>
+        <li>jQuery <a href="https://getbootstrap.com/docs/5.0"><i class="bi bi-link-45deg"></i></a></li>
+    <ul>
+        <li> jQuery DateTimePicker <a href="https://github.com/xdan/datetimepicker"><i class="bi bi-link-45deg"></i></a></li>
+    </ul>
+    </ul>
+    </p>
+{% endblock %}
