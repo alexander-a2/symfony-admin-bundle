@@ -1,0 +1,15 @@
+<tr>
+    {% for column in datasheet.columns %}
+        <td>
+            {% for filter in datasheet.getColumnFilters(column.name) %}
+                {% for attributeName, attributeType in filter.attributes %}
+                    <input type="text"
+                           name="{{ datasheet.name }}[{{ datasheet.queryKey('column_filters') }}][{{ column.name }}][{{ filter.shortName }}][{{ attributeName }}]"
+                           value="{{ filter.getParameter(attributeName) }}"
+                           autocomplete="off"
+                    >
+                {% endfor %}
+            {% endfor %}
+        </td>
+    {% endfor %}
+</tr>

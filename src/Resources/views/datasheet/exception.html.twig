@@ -1,0 +1,12 @@
+<div class="alert alert-danger">
+    <b>Failed to build datasheet</b> ({{ datasheet.name }})<br>
+    <small>
+        <b>Exception</b>: {{ exception.getMessage() }}<br>
+        <b>File</b>: {{ exception.getFile() }}<br>
+        <b>Line</b>: {{ exception.getLine() }}<br>
+        <details>
+            <summary>Trace</summary>
+            {{ trace|nl2br }}
+        </details>
+    </small>
+</div>

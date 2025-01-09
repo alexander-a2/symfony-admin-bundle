@@ -1,0 +1,3 @@
+admin:
+    resource: "@AdminBundle/Controller/"
+    name_prefix: admin_

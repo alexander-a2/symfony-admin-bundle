@@ -1,0 +1,57 @@
+{# {{ dump(datasheet) }} #}
+{% set recordsTotal = datasheet.totalRecordsFiltered %}
+{% set recordsPerPage = datasheet.filter('pgn').parameter('recordsPerPage') %}
+{% set pagesTotal = (recordsTotal / recordsPerPage)|round(0, 'ceil') %}
+{% set currentPage = datasheet.filter('pgn').parameter('currentPage') %}
+
+<div data-datasheet="{{ datasheet.name }}" data-datasheet-filters-key="{{ datasheet.queryKey('datasheet_filters') }}">
+    <form action="?" method="GET" data-datasheet-form="{{ datasheet.name }}">
+        {% include '@Admin/datasheet/datasheet_filters.html.twig' %}
+        <table class="table table-hover table">
+            <thead class="bg-light">
+            <th class="border-bottom">
+                <input type="checkbox">
+            </th>
+            {% for column in datasheet.columns %}
+                <th {{ column.width ? 'width='~column.width~'' : '' }}
+                        class="border-bottom">{{ column.title }}</th>
+            {% endfor %}
+            </thead>
+
+            {#            {% include 'datasheet/column_filters.html.twig' %} #}
+
+            {% for record in datasheet.data %}
+                <tr>
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    {% for column in datasheet.columns %}
+                        <td>
+                            <div style="width:150px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                {{ column.getContent(record)|raw }}
+                            </div>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <div>
+            <nav>
+                <ul class="pagination m-2"
+                    data-datasheet-pagination="{{ datasheet.name }}"
+                    data-datasheet-pagination-records-total="{{ recordsTotal }}"
+                    data-datasheet-pagination-records-per-page="{{ recordsPerPage }}"
+                    data-datasheet-pagination-pages-total="{{ pagesTotal }}"
+                    data-datasheet-pagination-current-page="{{ currentPage }}"
+                >
+                </ul>
+                <div class="text-muted">
+                    {{ 'admin.datasheet.pagination.records_total'|trans }}: {{ recordsTotal }},
+                    {{ 'admin.datasheet.pagination.records_per_page'|trans }}: {{ recordsPerPage }},
+                    {{ 'admin.datasheet.pagination.pages_total'|trans }}: {{ pagesTotal }},
+                    {{ 'admin.datasheet.pagination.current_page'|trans }}: {{ currentPage }}
+                </div>
+            </nav>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,16 @@
+{% extends '@Admin/layout/dashboard.html.twig' %}
+
+{% block page_title %}
+    {{ pageTitle }}
+{% endblock %}
+
+{% block page_content %}
+    <table id="admin-entity-view-table" class="table table-bordered table-hover table-striped">
+        {% for item in data %}
+            <tr>
+                <td width="200"><b>{{ item.name }}</b></td>
+                <td>{{ item.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
