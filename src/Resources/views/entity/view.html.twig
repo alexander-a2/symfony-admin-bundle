@@ -1,0 +1,14 @@
+{% extends '@Admin/layout/entity.html.twig' %}
+
+{% block page_content %}
+    <div style="max-width:600px">
+        <table id="admin-entity-view-table" class="table table-bordered table-hover bg-white text-secondary">
+            {% for column in columns %}
+                <tr>
+                    <td width="200"><b>{{ column.title }}</b></td>
+                    <td style="padding:0;">{{ column.getContent(record)|raw }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

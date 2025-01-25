@@ -33,15 +33,15 @@ class StringHelper
         return ucfirst(self::toCamelCase($string));
     }
 
-    static public function getShortClassName($fullyQualifiedClassNameOrObject, string $trimRight = null): string
+    static public function getShortClassName($objectOrFqcn, string $trimRight = null): string
     {
-        // using second best variant. not creating ReflectionClass, not eating more memory.
+        // using second-best variant. not creating ReflectionClass, not eating more memory.
         // https://stackoverflow.com/a/41264231
 
-        if (is_object($fullyQualifiedClassNameOrObject)) {
-            $fullyQualifiedClassNameOrObject = get_class($fullyQualifiedClassNameOrObject);
+        if (is_object($objectOrFqcn)) {
+            $objectOrFqcn = get_class($objectOrFqcn);
         }
-        $result = substr($fullyQualifiedClassNameOrObject, strrpos($fullyQualifiedClassNameOrObject, '\\') + 1);
+        $result = substr($objectOrFqcn, strrpos($objectOrFqcn, '\\') + 1);
 
         if ($trimRight) {
             $result = substr($result, 0, -1 * strlen($trimRight));
@@ -209,16 +209,16 @@ class StringHelper
 //        return reset($tmp);
 //    }
 //
-//    public static function getNameSpace($fullyQualifiedClassNameOrObject)
+//    public static function getNameSpace($objectOrFqcn)
 //    {
-//        if (is_object($fullyQualifiedClassNameOrObject)) {
-//            $fullyQualifiedClassNameOrObject = get_class($fullyQualifiedClassNameOrObject);
+//        if (is_object($objectOrFqcn)) {
+//            $objectOrFqcn = get_class($objectOrFqcn);
 //        }
 //
 //        return substr(
-//            $fullyQualifiedClassNameOrObject,
+//            $objectOrFqcn,
 //            0,
-//            strrpos($fullyQualifiedClassNameOrObject, '\\')
+//            strrpos($objectOrFqcn, '\\')
 //        );
 //    }
 //

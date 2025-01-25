@@ -18,7 +18,6 @@
         "php": ">=8.2",
         "symfony/framework-bundle": "^7.2",
         "doctrine/orm": "^3.3",
-        "knplabs/knp-menu-bundle": "^3.5",
-        "easycorp/easyadmin-bundle": "^4.20"
+        "knplabs/knp-menu-bundle": "^3.5"
     }
 }

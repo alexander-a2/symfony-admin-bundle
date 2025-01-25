@@ -34,6 +34,13 @@ class DatasheetColumnCustomized extends DatasheetColumn
         return parent::setWidth($width);
     }
 
+    public function setAlign(?string $align): self
+    {
+        $this->customizedAttributes[] = 'align';
+
+        return parent::setAlign($align);
+    }
+
     public function getCustomizedAttributes(): array
     {
         return $this->customizedAttributes;

@@ -1,0 +1,36 @@
+{% extends '@Admin/layout/dashboard.html.twig' %}
+
+{% block head %}
+    {{ set_entity_context(entity) }}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_content_full %}
+
+    <div class="mt-5">
+        <h4>{{ entity_settings().pageTitle }}</h4>
+    </div>
+
+    {#    {{ dump(entity_settings()) }} #}
+
+    {% if entity_settings().tabs|length > 0 %}
+        <ul class="nav nav-tabs mt-4">
+            {% for tabItem in entity_settings().tabs %}
+                <li class="nav-item">
+                    <a href="{{ tabItem.uri }}" class="nav-link {{ loop.first ? 'active' : '' }}"
+                       aria-current="page"><b>{{ tabItem.name }}</b></a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="bg-white border border-top-0 p-2">
+            {% block page_content %}{% endblock %}
+        </div>
+    {% else %}
+        {% block page_content_wrap %}
+            <div class="mt-5">
+                {{ parent() }}
+            </div>
+        {% endblock %}
+    {% endif %}
+
+{% endblock %}

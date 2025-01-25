@@ -33,6 +33,10 @@ class Datasheet implements DatasheetInterface
 
     protected string $columnNamePrefix = '';
 
+    protected array $queryStringParameters = [];
+
+    protected bool $debug = false;
+
     public function __construct(
         protected mixed   $source,
         protected ?string $id = null,
@@ -192,5 +196,27 @@ class Datasheet implements DatasheetInterface
         }
 
         return mb_substr(md5($this->getSource()), 0, 3);
+    }
+
+    public function getQueryStringParameters()
+    {
+        return $this->queryStringParameters;
+    }
+
+    public function setQueryStringParameters(array $queryStringParameters = []): self
+    {
+        $this->queryStringParameters = $queryStringParameters;
+
+        return $this;
+    }
+
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    public function setDebug(bool $debug): void
+    {
+        $this->debug = $debug;
     }
 }

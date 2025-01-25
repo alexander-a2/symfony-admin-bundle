@@ -14,8 +14,8 @@ use Twig\TwigFunction;
 class MenuRenderExtension extends AbstractExtension
 {
     public function __construct(
-//        protected Environment              $twig,
-        protected MenuBuilder              $menuBuilder,
+        protected Environment $twig,
+        protected MenuBuilder $menuBuilder,
     ) {
     }
 
@@ -33,8 +33,13 @@ class MenuRenderExtension extends AbstractExtension
 //        return $this->menuBuilder->build($name);
 //    }
 //
-    public function renderMenu(string $name): string
+    public function renderMenu(string $name, string $template = null): string
     {
+        if (!empty($template)) {
+            return (new TwigRenderer($this->twig, $template, new Matcher()))
+                ->render($this->menuBuilder->build($name));
+        }
+
         return (new ListRenderer(new Matcher()))->render($this->menuBuilder->build($name));
     }
 //

@@ -1,4 +1,3 @@
-{# {{ dump(datasheet) }} #}
 {% set recordsTotal = datasheet.totalRecordsFiltered %}
 {% set recordsPerPage = datasheet.filter('pgn').parameter('recordsPerPage') %}
 {% set pagesTotal = (recordsTotal / recordsPerPage)|round(0, 'ceil') %}
@@ -6,28 +5,32 @@
 
 <div data-datasheet="{{ datasheet.name }}" data-datasheet-filters-key="{{ datasheet.queryKey('datasheet_filters') }}">
     <form action="?" method="GET" data-datasheet-form="{{ datasheet.name }}">
-        {% include '@Admin/datasheet/datasheet_filters.html.twig' %}
-        <table class="table table-hover table">
-            <thead class="bg-light">
-            <th class="border-bottom">
+        <table class="table table-hover table-bordered table-hover text-secondary">
+            <thead class="bg-secondary text-white">
+            <th class="border-bottom" style="width:30px;text-align:center;">
                 <input type="checkbox">
             </th>
             {% for column in datasheet.columns %}
-                <th {{ column.width ? 'width='~column.width~'' : '' }}
-                        class="border-bottom">{{ column.title }}</th>
+                <th class="border-bottom"
+                    style="{{ column.styles }};white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+                    data-datasheet-column-title="{{ column.name }}"
+                >
+                    {{ column.title }}
+                    {% if (datasheet.filter('sort').parameters['by'] ?? null) == column.name %}
+                        {{ datasheet.filter('sort').parameters['direction'] == 'asc' ? '▲' : '▼' }}
+                    {% endif %}
+                </th>
             {% endfor %}
             </thead>
 
-            {#            {% include 'datasheet/column_filters.html.twig' %} #}
-
             {% for record in datasheet.data %}
                 <tr>
-                    <td>
+                    <td style="width:30px;text-align:center;">
                         <input type="checkbox">
                     </td>
                     {% for column in datasheet.columns %}
-                        <td>
-                            <div style="width:150px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                        <td style="padding:0;">
+                            <div style="{{ column.styles }};white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                                 {{ column.getContent(record)|raw }}
                             </div>
                         </td>
@@ -35,8 +38,15 @@
                 </tr>
             {% endfor %}
         </table>
+
         <div>
             <nav>
+                <div class="text-muted m-2">
+                    {{ 'datasheet.filters.pagination.records_total'|trans }}: {{ recordsTotal }},
+                    {{ 'datasheet.filters.pagination.records_per_page'|trans }}: {{ recordsPerPage }},
+                    {{ 'datasheet.filters.pagination.pages_total'|trans }}: {{ pagesTotal }},
+                    {{ 'datasheet.filters.pagination.current_page'|trans }}: {{ currentPage }}
+                </div>
                 <ul class="pagination m-2"
                     data-datasheet-pagination="{{ datasheet.name }}"
                     data-datasheet-pagination-records-total="{{ recordsTotal }}"
@@ -45,13 +55,16 @@
                     data-datasheet-pagination-current-page="{{ currentPage }}"
                 >
                 </ul>
-                <div class="text-muted">
-                    {{ 'admin.datasheet.pagination.records_total'|trans }}: {{ recordsTotal }},
-                    {{ 'admin.datasheet.pagination.records_per_page'|trans }}: {{ recordsPerPage }},
-                    {{ 'admin.datasheet.pagination.pages_total'|trans }}: {{ pagesTotal }},
-                    {{ 'admin.datasheet.pagination.current_page'|trans }}: {{ currentPage }}
-                </div>
             </nav>
         </div>
+        {% for parameterName, parameterValue in datasheet.queryStringParameters %}
+            <input type="{{ datasheet.debug ? 'text' : 'hidden' }}" name="{{ parameterName }}"
+                   value="{{ parameterValue }}">
+        {% endfor %}
+
+        {% include '@Admin/datasheet/datasheet_filters.html.twig' %}
+        {{ datasheet.debug ? '<input type="submit">' : '' }}
+        {% include '@Admin/datasheet/javascript.html.twig' %}
     </form>
+    {{ datasheet.debug ? dump(datasheet) : '' }}
 </div>

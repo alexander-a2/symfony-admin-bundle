@@ -41,12 +41,41 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
     }
 
     protected function addAllEntityFields(
-        DatasheetInterface     $datasheet,
-        string                 $entityClassName,
+        DatasheetInterface $datasheet,
+        string $entityFqcn,
         EntityManagerInterface $entityManager,
     ): void {
-        foreach (EntityHelper::get($entityManager)->getEntityFields($entityClassName) as $fieldName => $fieldType) {
-            $datasheet->addColumn(new DatasheetColumn($fieldName, EntityHelper::resolveDataTypeByFieldType($fieldType)));
+        foreach (EntityHelper::get($entityManager)->getEntityFields($entityFqcn) as $fieldName => $fieldType) {
+            $column = new DatasheetColumn($fieldName, EntityHelper::resolveDataTypeByFieldType($fieldType));
+            $this->setFieldSettings($column, $fieldType);
+            $datasheet->addColumn($column);
+        }
+    }
+
+    public function setFieldSettings(DatasheetColumn $column, string $fieldType): void
+    {
+        if ($column->getName() === 'id') {
+            $column->setWidth(50);
+            $column->setAlign('right');
+            return;
+        }
+
+        switch ($fieldType) {
+            case 'integer':
+            case 'float':
+                $column->setAlign('right');
+                $column->setWidth(100);
+                break;
+            case 'date':
+                $column->setWidth(140);
+                break;
+            case 'datetime':
+                $column->setWidth(190);
+                break;
+            case 'boolean':
+                $column->setAlign('center');
+                $column->setWidth(100);
+                break;
         }
     }
 }

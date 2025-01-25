@@ -18,11 +18,12 @@
                 }
             };
 
-            if(translations){
+            if (translations) {
                 this.datasheet.translations = translations;
             }
             this.readPagination();
             this.buildPagination();
+            this.initSortingControls();
         }
 
         readPagination() {
@@ -47,18 +48,11 @@
                 const endIndex = Math.min(currentPage + sideLength, pageButtons.length - 1);
                 pageButtons = pageButtons.slice(startIndex, endIndex + 1);
             }
-
-            if (currentPage !== 1) {
-                this.paginationContainer.appendChild(this.buildPaginationButton(1, this.datasheet.translations.pagination.first_page, currentPage));
-            }
-
+            this.paginationContainer.appendChild(this.buildPaginationButton(1, this.datasheet.translations.pagination.first_page, currentPage));
             pageButtons.forEach((number) => {
                 this.paginationContainer.appendChild(this.buildPaginationButton(number, number, currentPage));
             });
-
-            if (currentPage !== pagesTotal) {
-                this.paginationContainer.appendChild(this.buildPaginationButton(pagesTotal, this.datasheet.translations.pagination.last_page, currentPage));
-            }
+            this.paginationContainer.appendChild(this.buildPaginationButton(pagesTotal, this.datasheet.translations.pagination.last_page, currentPage));
         }
 
         buildPaginationButton(number, text, currentPage) {
@@ -82,15 +76,36 @@
         }
 
         onPaginationChange(paginationElement) {
+            this.getDatasheetFilterInput('pgn', 'currentPage').value = paginationElement.dataset.pageNumber;
+            this.datasheet.form.submit();
+        }
+
+        initSortingControls() {
+            this.datasheet.container.querySelectorAll('[data-datasheet-column-title]').forEach((element) => {
+                element.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    this.onSortChange(event.target.attributes['data-datasheet-column-title'].value);
+                });
+            });
+        }
+
+        onSortChange(desiredSortBy) {
+            let currentSortBy = this.getDatasheetFilterInput('sort', 'by').value;
+            let currentSortDirection = this.getDatasheetFilterInput('sort', 'direction').value === 'desc' ? 'desc' : 'asc';
+            let desiredSortDirection = currentSortBy === desiredSortBy ? (currentSortDirection === 'asc' ? 'desc' : 'asc') : 'asc';
+            this.getDatasheetFilterInput('sort', 'by').value = desiredSortBy;
+            this.getDatasheetFilterInput('sort', 'direction').value = desiredSortDirection;
+            this.datasheet.form.submit();
+        }
+
+        getDatasheetFilterInput(filterName, parameterName) {
             let inputName = this.datasheet.id + '[' + [
                 this.datasheet.queryKey.datasheetFilters,
-                'pgn',
-                'currentPage',
+                filterName,
+                parameterName,
             ].join('][') + ']';
 
-            let url = new URL(window.location.href);
-            url.searchParams.set(inputName, paginationElement.dataset.pageNumber);
-            window.location.search = url.search;
+            return this.datasheet.form.querySelector('input[name="' + inputName + '"]');
         }
     }
 
@@ -98,8 +113,8 @@
         .querySelectorAll('[data-datasheet]')
         .forEach(element => new Datasheet(element, {
             'pagination': {
-                'first_page': '{{ 'a2platform.datasheet.pagination.first_page'|trans }}',
-                'last_page': '{{ 'a2platform.datasheet.pagination.last_page'|trans }}',
+                'first_page': 'First',
+                'last_page': 'Last',
             }
         }));
 </script>

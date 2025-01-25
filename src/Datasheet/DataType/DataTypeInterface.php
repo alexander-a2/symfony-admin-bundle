@@ -5,6 +5,8 @@ namespace AlexanderA2\AdminBundle\Datasheet\DataType;
 
 interface DataTypeInterface
 {
+    public static function toFormatted(mixed $value): string;
+
     public static function toString($value): string;
 
     public static function fromString($value): mixed;

@@ -10,6 +10,11 @@ class StringDataType implements DataTypeInterface
 {
     public const MAX_LENGTH = 100;
 
+    public static function toFormatted(mixed $value): string
+    {
+        return '<div class="m-2">' . self::toString($value) . '</div>';
+    }
+
     public static function toString($value): string
     {
         $value = (string)$value;

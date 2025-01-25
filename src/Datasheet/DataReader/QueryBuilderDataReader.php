@@ -70,6 +70,7 @@ class QueryBuilderDataReader extends AbstractDataReader implements DataReaderInt
 
     protected function removeLeftJoins(QueryBuilder $queryBuilder): void
     {
+        return;
         $joins = $queryBuilder->getDQLPart('join');
         $filteredJoins = [];
 

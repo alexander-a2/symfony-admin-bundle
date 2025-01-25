@@ -4,10 +4,14 @@ declare(strict_types=1);
 namespace AlexanderA2\AdminBundle\Datasheet\DataType;
 
 use AlexanderA2\AdminBundle\Datasheet\Filter\EqualsFilter;
-use DateTimeInterface;
 
 class FloatDataType implements DataTypeInterface
 {
+    public static function toFormatted(mixed $value): string
+    {
+        return '<div class="m-2">' . self::toString($value) . '</div>';
+    }
+
     public static function toString($value): string
     {
         return (string) $value;

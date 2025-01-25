@@ -9,6 +9,11 @@ class ObjectsDataType implements DataTypeInterface
 {
     private const LIMIT = 20;
 
+    public static function toFormatted(mixed $value): string
+    {
+        return '<div class="m-2">' . self::toString($value) . '</div>';
+    }
+
     public static function toString($value): string
     {
         if (is_iterable($value)) {

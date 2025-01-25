@@ -2,6 +2,7 @@
 
 namespace AlexanderA2\AdminBundle\Datasheet;
 
+use AlexanderA2\AdminBundle\Datasheet\DataType\EmptyDataType;
 use AlexanderA2\AdminBundle\Helper\ObjectHelper;
 
 class DatasheetColumn implements DatasheetColumnInterface
@@ -12,8 +13,10 @@ class DatasheetColumn implements DatasheetColumnInterface
 
     protected mixed $handler = null;
 
+    protected ?string $align = null;
+
     public function __construct(
-        protected string  $name,
+        protected string $name,
         protected ?string $dataType,
     ) {
         $this->title = $name;
@@ -77,10 +80,37 @@ class DatasheetColumn implements DatasheetColumnInterface
             return call_user_func($this->handler, $value, $record, $this);
         }
 
-        if (is_null($value)) {
-            return '';
+        if (EmptyDataType::is($value)) {
+            return EmptyDataType::toFormatted($value);
         }
 
-        return call_user_func_array([$this->getDataType(), 'toString'], [$value]);
+        return call_user_func_array([$this->getDataType(), 'toFormatted'], [$value]);
+    }
+
+    public function getAlign(): ?string
+    {
+        return $this->align;
+    }
+
+    public function setAlign(?string $align): self
+    {
+        $this->align = $align;
+
+        return $this;
+    }
+
+    public function getStyles(): string
+    {
+        $styles = [];
+
+        if (!empty($this->getAlign())) {
+            $styles[] = 'text-align: ' . $this->getAlign();
+        }
+
+        if (!empty($this->getWidth())) {
+            $styles[] = 'width: ' . $this->getWidth() . 'px';
+        }
+
+        return implode('; ', $styles);
     }
 }

@@ -1,6 +1,6 @@
 {% for filter in datasheet.getFilters() %}
     {% for attributeName, attributeType in filter.attributes %}
-        <input type="hidden"
+        <input type="{{ datasheet.debug ? 'text' : 'hidden' }}"
                name="{{ datasheet.name }}[{{ datasheet.queryKey('datasheet_filters') }}][{{ filter.shortName }}][{{ attributeName }}]"
                value="{{ filter.getParameter(attributeName) }}"
                autocomplete="off"

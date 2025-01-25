@@ -37,4 +37,12 @@ interface DatasheetInterface
     public function getCustomizedColumns(): array;
 
     public function getRemovedColumns(): array;
+
+    public function getQueryStringParameters();
+
+    public function setQueryStringParameters(array $queryStringParameters = []): self;
+
+    public function isDebug(): bool;
+
+    public function setDebug(bool $debug): void;
 }

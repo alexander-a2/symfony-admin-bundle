@@ -1,0 +1,10 @@
+{% block choice_bootstrap_widget_row %}
+    <div class="form-block mb-2">
+        <label class="form-label">{{ label ? label|toReadable : name|toReadable }}</label>
+        <select {{ block('widget_attributes') }} {{ multiple ? 'multiple="multiple"' : '' }} data-width="100%" class="selectpicker" data-size="10">
+            {% for choice in choices %}
+                <option value="{{ choice.value }}">{{ choice.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endblock %}

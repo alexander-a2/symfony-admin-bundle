@@ -31,7 +31,6 @@ class EntityHelper
         'full_name',
         'title',
         'email',
-        'id',
     ];
 
     static array $entityListCached;
@@ -90,25 +89,25 @@ class EntityHelper
         throw new Exception('Field not found');
     }
 
-    public function getRelationClassName(string $baseEntityClassName, string $relationFieldName): string
+    public function getRelationClassName(string $baseentityFqcn, string $relationFieldName): string
     {
         return $this
-            ->getMetadata($baseEntityClassName)
+            ->getMetadata($baseentityFqcn)
             ->getAssociationMapping($relationFieldName)['targetEntity'];
     }
 
-    public function getMetadata(string $entityClassName): ClassMetadata
+    public function getMetadata(string $entityFqcn): ClassMetadata
     {
-        if (!array_key_exists($entityClassName, $this->entityMetadataCached)) {
-            $this->entityMetadataCached[$entityClassName] = $this->entityManager->getClassMetadata($entityClassName);
+        if (!array_key_exists($entityFqcn, $this->entityMetadataCached)) {
+            $this->entityMetadataCached[$entityFqcn] = $this->entityManager->getClassMetadata($entityFqcn);
         }
 
-        return $this->entityMetadataCached[$entityClassName];
+        return $this->entityMetadataCached[$entityFqcn];
     }
 
-    public function getEntityPrimaryAttribute(string $entityClassName): ?string
+    public function getEntityPrimaryAttribute(string $entityFqcn): ?string
     {
-        $fields = $this->getEntityFields($entityClassName);
+        $fields = $this->getEntityFields($entityFqcn);
 
         foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
             if (array_key_exists($name, $fields)) {
@@ -132,7 +131,25 @@ class EntityHelper
         return self::$entityListCached;
     }
 
-    public static function guessPrimaryFieldName(array $fields): ?string
+    public function getReadableTitle(mixed $entity): string
+    {
+        if (empty($entity)) {
+            return '';
+        }
+
+        if (method_exists($entity, '__toString')) {
+            return (string) $entity;
+        }
+        $primaryField = self::guessPrimaryFieldName($this->getEntityFields(get_class($entity)), false);
+
+        if ($primaryField) {
+            return $entity->{'get' . ucfirst($primaryField)}();
+        }
+
+        return sprintf('%s #%d', StringHelper::getShortClassName($entity), $entity->getId());
+    }
+
+    public static function guessPrimaryFieldName(array $fields, bool $returnFallback = true): ?string
     {
         foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
             if (array_key_exists($name, $fields)) {
@@ -140,7 +157,7 @@ class EntityHelper
             }
         }
 
-        return null;
+        return $returnFallback ? array_key_first($fields) : null;
     }
 
     public static function resolveDataTypeByFieldType(string $fieldType): string

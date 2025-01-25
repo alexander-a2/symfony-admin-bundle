@@ -7,13 +7,13 @@ use AlexanderA2\AdminBundle\Datasheet\DatasheetInterface;
 class EntityDatasheetBuildEvent
 {
     public function __construct(
-        protected string $entityClassName,
+        protected string $entityFqcn,
         protected DatasheetInterface $datasheet){
     }
 
-    public function getEntityClassName(): string
+    public function getEntityFqcn(): string
     {
-        return $this->entityClassName;
+        return $this->entityFqcn;
     }
 
     public function getDatasheet(): DatasheetInterface
