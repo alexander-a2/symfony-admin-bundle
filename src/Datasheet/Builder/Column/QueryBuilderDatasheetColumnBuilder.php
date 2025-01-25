@@ -67,10 +67,10 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
                 $column->setWidth(100);
                 break;
             case 'date':
-                $column->setWidth(140);
+                $column->setWidth(110);
                 break;
             case 'datetime':
-                $column->setWidth(190);
+                $column->setWidth(170);
                 break;
             case 'boolean':
                 $column->setAlign('center');

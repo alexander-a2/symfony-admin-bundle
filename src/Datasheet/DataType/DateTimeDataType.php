@@ -9,14 +9,15 @@ use DateTimeInterface;
 class DateTimeDataType implements DataTypeInterface
 {
     const TIME_FORMAT = 'H:i';
-    const DATE_FORMAT = 'd F, Y';
-    const DATE_TIME_FORMAT = 'H:i, d F, Y';
+    const DATE_FORMAT = 'd M, Y';
+    const DATE_TIME_FORMAT = 'H:i, d M, Y';
 
     public static function toFormatted(mixed $value): string
     {
-        return '<div class="border rounded-3 m-0 bg-light d-flex m-1" style="padding:3px 7px;max-width:190px;">'
-            . '<span class="flex-shrink-0 col-3"><small>' . $value->format(self::TIME_FORMAT) . '</small></span> '
-            . '<span class="flex-grow-1"><small>' . $value->format(self::DATE_FORMAT) . '</small></span> ';
+        return '<div class="d-inline-block border rounded-3 m-0 bg-light my-1 mx-1 text-center" style="padding:3px 7px;width:100px;"><small>'
+            . $value->format(self::DATE_FORMAT) . '</small></div> '
+            . '<div class="d-inline-block border rounded-3 m-0 bg-light my-1 text-center" style="padding:3px 7px;width:50px;"><small>'
+            . $value->format(self::TIME_FORMAT) . '</small></div> ';
     }
 
     public static function toString($value): string

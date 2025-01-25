@@ -30,6 +30,7 @@ class EntityHelper
         'fullname',
         'full_name',
         'title',
+        'label',
         'email',
     ];
 
@@ -131,7 +132,7 @@ class EntityHelper
         return self::$entityListCached;
     }
 
-    public function getReadableTitle(mixed $entity): string
+    public function getLabel(mixed $entity): string
     {
         if (empty($entity)) {
             return '';

@@ -108,7 +108,7 @@ class EntityDatasheetBuilder
                             'entityFqcn' => $relationFqcn,
                             'entityId' => $entity->getId(),
                         ]),
-                        StringDataType::toFormatted($entityHelper->getReadableTitle($entity)),
+                        StringDataType::toFormatted($entityHelper->getLabel($entity)),
                     );
                 });
         }

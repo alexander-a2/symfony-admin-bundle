@@ -7,14 +7,13 @@ use DateTime;
 
 class DateDataType implements DataTypeInterface
 {
-    const DATE_FORMAT = 'd F, Y';
-    const DATE_DATEFORMAT = 'd F, Y';
+    const DATE_FORMAT = 'd M, Y';
+    const DATE_DATEFORMAT = 'd M, Y';
 
     public static function toFormatted(mixed $value): string
     {
-        return '<div class="border rounded-3 bg-light m-1" style="padding:3px 7px;max-width:140px;">'
-            .'<span class=""><small>' . $value->format(self::DATE_DATEFORMAT) . '</small></span>'
-            .'</div>';
+        return '<div class="border rounded-3 bg-light m-1 text-center" style="padding:3px 7px;width:100px;">'
+            .'<small>' . $value->format(self::DATE_DATEFORMAT) . '</small></div>';
     }
 
     public static function toString($value): string
