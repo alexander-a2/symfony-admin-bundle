@@ -12,8 +12,7 @@ class DateDataType implements DataTypeInterface
 
     public static function toFormatted(mixed $value): string
     {
-        return '<div class="border rounded-3 bg-light m-1 text-center" style="padding:3px 7px;width:100px;">'
-            .'<small>' . $value->format(self::DATE_DATEFORMAT) . '</small></div>';
+        return '<div class="d-block border rounded-3 bg-light m-1 p-1 text-center" style="width:100px;"><small>' . $value->format(self::DATE_DATEFORMAT) . '</small></div>';
     }
 
     public static function toString($value): string

@@ -74,7 +74,6 @@ class CrudController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         EntityFormBuilder $formBuilder,
-        TranslatorInterface $translator,
     ): Response {
         $entityFqcn = $request->query->get('entityFqcn');
         $entityId = $request->query->get('entityId');
@@ -84,7 +83,6 @@ class CrudController extends AbstractController
         } else {
             $entity = new $entityFqcn;
         }
-
         $form = $formBuilder->get($entity);
         $form->setData($entity);
         $form->handleRequest($request);
@@ -106,57 +104,26 @@ class CrudController extends AbstractController
             ]);
         }
 
-        return $this->render('@Admin/crud/edit.html.twig', [
-            'pageTitle' => $translator->trans($entityId ? 'a2platform.admin.crud.edit.page_title' : 'a2platform.admin.crud.create.page_title', [
-                '%entityName%' => StringHelper::getShortClassName($entityFqcn),
-                '%entityId%' => $entityId,
-            ]),
+        return $this->render('@Admin/entity/edit.html.twig', [
+            'entity' => $entity,
             'form' => $form->createView(),
-            'entityFqcn' => $entityFqcn,
-            'entityId' => $entityId ?? null,
-            'pageControlsLeft' => [
-                MenuBuilder::buildMenuItem(
-                    'a2platform.admin.controls.back',
-                    $this->generateUrl('admin_crud_list', ['entityFqcn' => $entityFqcn]),
-                    'arrow-left-circle-fill',
-                    'secondary',
-                    ['id' => 'admin-entity-crud-index'],
-                ),
-            ],
-            'pageControlsRight' => $entityId ? [
-                MenuBuilder::buildMenuItem(
-                    'a2platform.admin.controls.delete',
-                    $this->generateUrl('admin_crud_delete', ['entityFqcn' => $entityFqcn, 'entityId' => $entityId]),
-                    'trash-fill',
-                    'danger',
-                    ['id' => 'admin-entity-crud-delete'],
-                    true,
-                ),
-            ] : [],
         ]);
     }
 
 
     #[Route("delete", name: "delete")]
     public function deleteAction(
-//        Request                $request,
-//        EntityManagerInterface $entityManager,
-    ): Response
-    {
-//        $entityFqcn = $request->query->get('entityFqcn');
-//        $entityId = $request->query->get('entityId');
-//        $entity = $entityManager->getRepository($entityFqcn)->find($entityId);
-//
-//        try {
-//            $entityManager->remove($entity);
-//            $entityManager->flush();
-//            $this->addFlash('success', 'admin.entity.crud.record_was_deleted');
-//        } catch (Throwable $exception) {
-//            $this->addFlash('error', 'admin.something_went_wrong');
-//        }
-//
-//        return $this->redirectToRoute('admin_crud_index', [
-//            'entityFqcn' => $entityFqcn,
-//        ]);
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $entityFqcn = $request->query->get('entityFqcn');
+        $entityId = $request->query->get('entityId');
+        $entity = $entityManager->getRepository($entityFqcn)->find($entityId);
+        $entityManager->remove($entity);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('admin_crud_list', [
+            'entityFqcn' => $entityFqcn,
+        ]);
     }
 }

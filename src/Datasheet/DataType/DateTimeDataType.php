@@ -14,10 +14,10 @@ class DateTimeDataType implements DataTypeInterface
 
     public static function toFormatted(mixed $value): string
     {
-        return '<div class="d-inline-block border rounded-3 m-0 bg-light my-1 mx-1 text-center" style="padding:3px 7px;width:100px;"><small>'
-            . $value->format(self::DATE_FORMAT) . '</small></div> '
-            . '<div class="d-inline-block border rounded-3 m-0 bg-light my-1 text-center" style="padding:3px 7px;width:50px;"><small>'
-            . $value->format(self::TIME_FORMAT) . '</small></div> ';
+//        return '<div class="d-block border rounded-3 bg-light m-1 p-1 text-center" style="width:100px;"><small>' . $value->format(self::DATE_DATEFORMAT) . '</small></div>';
+
+        return '<div class="d-inline-block border rounded-3 bg-light m-1 p-1 text-center" style="width:100px;"><small>' . $value->format(self::DATE_FORMAT) . '</small></div> '
+            . '<div class="d-inline-block border rounded-3 bg-light my-1 p-1 text-center" style="width:50px;"><small>' . $value->format(self::TIME_FORMAT) . '</small></div> ';
     }
 
     public static function toString($value): string

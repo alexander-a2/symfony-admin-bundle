@@ -8,9 +8,9 @@ class BooleanDataType implements DataTypeInterface
     public static function toFormatted(mixed $value): string
     {
         if ($value) {
-            return '<span class="badge bg-success m-2">Yes</span>';
+            return '<div class="d-inline-block bg-success text-white border rounded-3 m-2 p-0 px-3 text-center"><small>Yes</small></div>';
         } else {
-            return '<span class="badge bg-secondary m-2">No</span>';
+            return '<div class="d-inline-block bg-light text-secondary border rounded-3 m-2 p-0 px-3 text-center"><small>No</small></div>';
         }
     }
 

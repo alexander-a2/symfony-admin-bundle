@@ -44,7 +44,7 @@ class EntitySettingsManager
 
         if ($entitySettings->isSingleView()) {
             $entitySettings->setPageTitle($this->buildPageTitle($entitySettings, $entityObject));
-        }else{
+        } else {
             $entitySettings->setPageTitle($entitySettings->getName()); // pluralize?
         }
         $this->eventDispatcher->dispatch(new EntitySettingsBuildEvent($entitySettings));
@@ -65,11 +65,22 @@ class EntitySettingsManager
             }
             $objectName = $entityObject->{'get' . ucfirst($primaryFieldName)}();
 
-            return sprintf('%s «%s»', $entitySettings->getName(), $objectName);
+            if (!empty($objectName)) {
+                return sprintf('%s «%s»', $entitySettings->getName(), $objectName);
+            }
         }
 
-        if (method_exists($entityObject, '__toString')) {
-            return $entityObject->__toString();
+        if (method_exists($entitySettings->getFqcn(), '__toString')) {
+            if (empty($entityObject)) {
+                $entityObject = $this->entityManager->getRepository(
+                    $entitySettings->getFqcn())->find($entitySettings->getId()
+                );
+            }
+            $asString = $entityObject->__toString();
+
+            if (!empty($asString)) {
+                return sprintf('%s «%s»', $entitySettings->getName(), $asString);
+            }
         }
 
         return sprintf('%s #%s', $entitySettings->getName(), $entitySettings->getId());

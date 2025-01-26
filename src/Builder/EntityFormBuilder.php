@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace AlexanderA2\AdminBundle\Builder;
 
+use AlexanderA2\AdminBundle\Event\EntityFormBuildEvent;
 use AlexanderA2\AdminBundle\Helper\EntityHelper;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -58,12 +59,12 @@ class EntityFormBuilder
             $formBuilder->add($fieldName, $type, $options);
         }
         $formBuilder->add('submit', SubmitType::class, [
-            'label' => 'a2platform.admin.controls.save',
+            'label' => 'Save',
             'attr' => [
                 'class' => 'btn btn-primary px-5',
             ],
         ]);
-//        $this->eventDispatcher->dispatch(new EntityFormBuildEvent($entityClassName, $formBuilder));
+        $this->eventDispatcher->dispatch(new EntityFormBuildEvent($entityClassName, $formBuilder));
 
         return $formBuilder->getForm();
     }

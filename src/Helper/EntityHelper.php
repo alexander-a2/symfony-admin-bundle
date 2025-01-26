@@ -18,7 +18,9 @@ use ReflectionClass;
 class EntityHelper
 {
     public const RELATION_FIELD_TYPES = [
+        ClassMetadata::ONE_TO_ONE => 'one_to_one',
         ClassMetadata::MANY_TO_ONE => 'many_to_one',
+        ClassMetadata::ONE_TO_MANY => 'one_to_many',
         ClassMetadata::MANY_TO_MANY => 'many_to_many',
     ];
 

@@ -7,7 +7,7 @@ class EmptyDataType implements DataTypeInterface
 {
     public static function toFormatted(mixed $value): string
     {
-        return '<span class="badge bg-light m-2" style="color:#cccccc">NULL</span>';
+        return '<div class="d-inline-block bg-light rounded-3 m-2 p-0 px-3 text-center" style="color:#cccccc;"><small>Null</small></div>';
     }
 
     public static function toString($value): string

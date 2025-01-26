@@ -8,11 +8,11 @@ use AlexanderA2\AdminBundle\Datasheet\Filter\EqualsFilter;
 
 class StringDataType implements DataTypeInterface
 {
-    public const MAX_LENGTH = 100;
+    public const MAX_LENGTH = 20;
 
     public static function toFormatted(mixed $value): string
     {
-        return '<div class="m-2">' . self::toString($value) . '</div>';
+        return '<span class="d-inline-block m-2">' . self::toString($value) . '</span>';
     }
 
     public static function toString($value): string

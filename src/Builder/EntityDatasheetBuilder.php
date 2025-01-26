@@ -8,7 +8,6 @@ use AlexanderA2\AdminBundle\Datasheet\DataType\EmptyDataType;
 use AlexanderA2\AdminBundle\Datasheet\DataType\StringDataType;
 use AlexanderA2\AdminBundle\Event\EntityDatasheetBuildEvent;
 use AlexanderA2\AdminBundle\Helper\EntityHelper;
-use AlexanderA2\AdminBundle\Helper\ObjectHelper;
 use AlexanderA2\AdminBundle\Helper\StringHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -51,8 +50,17 @@ class EntityDatasheetBuilder
 
         // Decorate relation fields
         foreach ($this->entityHelper->getEntityFields($entityFqcn) as $fieldName => $fieldType) {
-            if (in_array($fieldType, EntityHelper::RELATION_FIELD_TYPES)) {
-                $this->addLinkToRelationField($datasheet, $entityFqcn, $fieldName, $fieldType);
+            if (in_array($fieldType, [
+                EntityHelper::RELATION_FIELD_TYPES[ClassMetadata::ONE_TO_ONE],
+                EntityHelper::RELATION_FIELD_TYPES[ClassMetadata::MANY_TO_ONE],
+            ])) {
+                $this->decorateSingleEntityColumn($datasheet, $entityFqcn, $fieldName);
+            }
+            if (in_array($fieldType, [
+                EntityHelper::RELATION_FIELD_TYPES[ClassMetadata::ONE_TO_MANY],
+                EntityHelper::RELATION_FIELD_TYPES[ClassMetadata::MANY_TO_MANY],
+            ])) {
+                $this->decorateMultipleEntityColumn($datasheet, $entityFqcn, $fieldName, !empty($entityId));
             }
         }
         $this->eventDispatcher->dispatch(new EntityDatasheetBuildEvent($entityFqcn, $datasheet));
@@ -89,51 +97,69 @@ class EntityDatasheetBuilder
             });
     }
 
-    protected function addLinkToRelationField(DatasheetInterface $datasheet, string $entityFqcn, string $fieldName, string $fieldType): void
+    protected function decorateSingleEntityColumn(DatasheetInterface $datasheet, string $entityFqcn, string $fieldName): void
     {
         $relationFqcn = $this->entityHelper->getRelationClassName($entityFqcn, $fieldName);
         $router = $this->router;
         $entityHelper = $this->entityHelper;
 
-        if ($fieldType === EntityHelper::RELATION_FIELD_TYPES[ClassMetadata::MANY_TO_ONE]) {
-            $datasheet->getColumn($fieldName)
-                ->setHandler(function ($entity) use ($router, $relationFqcn, $entityHelper) {
-                    if (EmptyDataType::is($entity)) {
-                        return EmptyDataType::toFormatted($entity);
-                    }
+        $datasheet->getColumn($fieldName)
+            ->setHandler(function ($entity) use ($router, $relationFqcn, $entityHelper) {
+                if (EmptyDataType::is($entity)) {
+                    return EmptyDataType::toFormatted(null);
+                }
 
-                    return sprintf(
+                return sprintf(
+                    '<div class="border rounded-3 bg-light my-1 mx-1 py-1 px-2 d-inline-block"><small><a href="%s">%s</a></small></div>',
+                    $router->generate('admin_crud_view', [
+                        'entityFqcn' => $relationFqcn,
+                        'entityId' => $entity->getId(),
+                    ]),
+                    StringDataType::toString($entityHelper->getLabel($entity)),
+                );
+            });
+    }
+
+    protected function decorateMultipleEntityColumn(DatasheetInterface $datasheet, string $entityFqcn, string $fieldName, bool $showFullList = false): void
+    {
+        $relationFqcn = $this->entityHelper->getRelationClassName($entityFqcn, $fieldName);
+        $router = $this->router;
+        $entityHelper = $this->entityHelper;
+
+        $datasheet->getColumn($fieldName)
+            ->setHandler(function ($entities) use ($router, $relationFqcn, $entityHelper, $showFullList) {
+                if (count($entities) === 0) {
+                    return EmptyDataType::toFormatted(null);
+                }
+
+                $output = [];
+
+                for ($i = 0; $i < ($showFullList ? count($entities) : 1); $i++) {
+                    $output[] = sprintf(
                         '<a href="%s">%s</a>',
                         $router->generate('admin_crud_view', [
                             'entityFqcn' => $relationFqcn,
-                            'entityId' => $entity->getId(),
+                            'entityId' => $entities[$i]->getId(),
                         ]),
-                        StringDataType::toFormatted($entityHelper->getLabel($entity)),
+                        StringDataType::toString($entityHelper->getLabel($entities[$i])),
                     );
-                });
-        }
+                }
+                $classes = implode(' ', [
+                    'border',
+                    'rounded-3',
+                    'bg-light',
+                    'my-1',
+                    'mx-1',
+                    'py-1 px-2',
+                    $showFullList ? 'd-block' : 'd-inline-block',
+                ]);
+                $output = '<div class="' . $classes . '"><small>' . implode('</small></div><div  class="' . $classes . '"><small>', $output) . '</small></div>';
 
-//        if ($fieldType === EntityHelper::RELATION_FIELD_TYPES[ClassMetadata::MANY_TO_MANY]) {
-//            $datasheet->getColumn($fieldName)->setHandler(function ($entities) use ($router, $relationClassFqcn, $relationPrimaryAttribute) {
-//                if (empty($entities)) {
-//                    return '';
-//                }
-//                $links = [];
-//
-//                foreach ($entities as $entity) {
-//                    $links[] = sprintf(
-//                        '<a href="%s">#%s %s</a>',
-//                        $router->generate('admin_crud_view', [
-//                            'entityFqcn' => $relationClassFqcn,
-//                            'entityId' => $entity->getId(),
-//                        ]),
-//                        $entity->getId(),
-//                        ObjectHelper::getProperty($entity, $relationPrimaryAttribute),
-//                    );
-//                }
-//
-//                return implode(', ', $links);
-//            });
-//        }
+                if (!$showFullList && count($entities) > 1) {
+                    $output .= '<div class="' . $classes . '"><small><b> +' . (count($entities) - 1) . '</b></small></div>';
+                }
+
+                return '<div style="white-space: nowrap">' . $output . '</div>';
+            });
     }
 }
