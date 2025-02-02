@@ -1,6 +1,10 @@
 # Symfony Admin Bundle
 
-### Easy and customizable admin panel for symfony 
+### Easy and customizable admin panel for symfony with:
+
+- Responsive admin dashboard template, based on Bootstrap 5 with no extra styles
+- All entities list with CRUD operations out of the box
+- Filtering by all fields, out of the box
 
 ---
 
