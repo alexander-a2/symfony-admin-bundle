@@ -110,7 +110,7 @@ class EntityDatasheetBuilder
                 }
 
                 return sprintf(
-                    '<div class="border rounded-3 bg-light my-1 mx-1 py-1 px-2 d-inline-block"><small><a href="%s">%s</a></small></div>',
+                    '<a href="%s">%s</a>',
                     $router->generate('admin_crud_view', [
                         'entityFqcn' => $relationFqcn,
                         'entityId' => $entity->getId(),
@@ -144,22 +144,13 @@ class EntityDatasheetBuilder
                         StringDataType::toString($entityHelper->getLabel($entities[$i])),
                     );
                 }
-                $classes = implode(' ', [
-                    'border',
-                    'rounded-3',
-                    'bg-light',
-                    'my-1',
-                    'mx-1',
-                    'py-1 px-2',
-                    $showFullList ? 'd-block' : 'd-inline-block',
-                ]);
-                $output = '<div class="' . $classes . '"><small>' . implode('</small></div><div  class="' . $classes . '"><small>', $output) . '</small></div>';
+                $output = implode(', ', $output);
 
                 if (!$showFullList && count($entities) > 1) {
-                    $output .= '<div class="' . $classes . '"><small><b> +' . (count($entities) - 1) . '</b></small></div>';
+                    $output .= ' (+' . (count($entities) - 1) . ')';
                 }
 
-                return '<div style="white-space: nowrap">' . $output . '</div>';
+                return $output;
             });
     }
 }

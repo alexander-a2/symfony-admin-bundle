@@ -11,7 +11,7 @@ class ObjectsDataType implements DataTypeInterface
 
     public static function toFormatted(mixed $value): string
     {
-        return '<div class="m-2">' . self::toString($value) . '</div>';
+        return self::toString($value);
     }
 
     public static function toString($value): string

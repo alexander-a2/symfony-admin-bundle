@@ -12,6 +12,11 @@ use Doctrine\ORM\QueryBuilder;
 
 class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
 {
+    const COLUMN_WIDTH_SMALL = 50; // id, boolean
+    const COLUMN_WIDTH_MEDIUM = 100; // integer, float, date
+    const COLUMN_WIDTH_LARGE = 200; // others
+    const COLUMN_ALIGN_RIGHT = 'right';
+
     public static function supports(DatasheetInterface $datasheet): bool
     {
         return $datasheet->getDataReader() instanceof QueryBuilderDataReader;
@@ -55,26 +60,25 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
     public function setFieldSettings(DatasheetColumn $column, string $fieldType): void
     {
         if ($column->getName() === 'id') {
-            $column->setWidth(50);
-            $column->setAlign('right');
+            $column->setWidth(self::COLUMN_WIDTH_SMALL);
+            $column->setAlign(self::COLUMN_ALIGN_RIGHT);
             return;
         }
 
         switch ($fieldType) {
             case 'integer':
             case 'float':
-                $column->setAlign('right');
-                $column->setWidth(100);
-                break;
+            case 'boolean':
             case 'date':
-                $column->setWidth(110);
+                $column->setAlign(self::COLUMN_ALIGN_RIGHT);
+                $column->setWidth(self::COLUMN_WIDTH_MEDIUM);
                 break;
             case 'datetime':
-                $column->setWidth(170);
+                $column->setAlign(self::COLUMN_ALIGN_RIGHT);
+                $column->setWidth(self::COLUMN_WIDTH_LARGE);
                 break;
-            case 'boolean':
-                $column->setAlign('center');
-                $column->setWidth(100);
+            default:
+                $column->setWidth(self::COLUMN_WIDTH_LARGE);
                 break;
         }
     }

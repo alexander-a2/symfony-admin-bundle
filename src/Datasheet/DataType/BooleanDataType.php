@@ -7,11 +7,7 @@ class BooleanDataType implements DataTypeInterface
 {
     public static function toFormatted(mixed $value): string
     {
-        if ($value) {
-            return '<div class="d-inline-block bg-success text-white border rounded-3 m-2 p-0 px-3 text-center"><small>Yes</small></div>';
-        } else {
-            return '<div class="d-inline-block bg-light text-secondary border rounded-3 m-2 p-0 px-3 text-center"><small>No</small></div>';
-        }
+        return $value ? 'Yes' : 'No';
     }
 
     public static function toString($value): string

@@ -12,7 +12,7 @@ class StringDataType implements DataTypeInterface
 
     public static function toFormatted(mixed $value): string
     {
-        return '<span class="d-inline-block m-2">' . self::toString($value) . '</span>';
+        return self::toString($value);
     }
 
     public static function toString($value): string

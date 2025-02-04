@@ -8,22 +8,17 @@ use DateTimeInterface;
 
 class DateTimeDataType implements DataTypeInterface
 {
-    const TIME_FORMAT = 'H:i';
-    const DATE_FORMAT = 'd M, Y';
-    const DATE_TIME_FORMAT = 'H:i, d M, Y';
+    const FORMAT = 'H:i, d M, Y';
 
     public static function toFormatted(mixed $value): string
     {
-//        return '<div class="d-block border rounded-3 bg-light m-1 p-1 text-center" style="width:100px;"><small>' . $value->format(self::DATE_DATEFORMAT) . '</small></div>';
-
-        return '<div class="d-inline-block border rounded-3 bg-light m-1 p-1 text-center" style="width:100px;"><small>' . $value->format(self::DATE_FORMAT) . '</small></div> '
-            . '<div class="d-inline-block border rounded-3 bg-light my-1 p-1 text-center" style="width:50px;"><small>' . $value->format(self::TIME_FORMAT) . '</small></div> ';
+        return $value->format(self::FORMAT);
     }
 
     public static function toString($value): string
     {
         /** @var DateTime $value */
-        return $value ? $value->format(self::DATE_TIME_FORMAT) : '';
+        return $value ? $value->format(self::FORMAT) : '';
     }
 
     public static function fromString($value): DateTime
