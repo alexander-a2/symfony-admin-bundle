@@ -6,7 +6,7 @@
             {% for column in columns %}
                 <tr>
                     <td width="200"><b>{{ column.title }}</b></td>
-                    <td style="padding:0;">{{ column.getContent(record)|raw }}</td>
+                    <td>{{ column.getContent(record)|raw }}</td>
                 </tr>
             {% endfor %}
         </table>

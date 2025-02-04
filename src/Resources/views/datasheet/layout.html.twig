@@ -6,14 +6,15 @@
 <div data-datasheet="{{ datasheet.name }}" data-datasheet-filters-key="{{ datasheet.queryKey('datasheet_filters') }}">
     <div style="width:100%;overflow-x: auto;">
         <form action="?" method="GET" data-datasheet-form="{{ datasheet.name }}">
-            <table class="table table-hover table-bordered table-hover text-secondary table-responsive">
+            <table class="table table-hover table-bordered table-hover text-secondary table-responsive bg-white"
+                   style="width:auto;">
                 <thead class="bg-secondary text-white">
                 <th class="border-bottom" style="width:30px;text-align:center;">
                     <input type="checkbox">
                 </th>
                 {% for column in datasheet.columns %}
                     <th class="border-bottom"
-                        style="{{ column.styles }};white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+                        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:{{ column.width }}px;"
                         data-datasheet-column-title="{{ column.name }}"
                     >
                         {{ column.title }}
