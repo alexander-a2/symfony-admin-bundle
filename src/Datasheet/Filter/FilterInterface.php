@@ -2,15 +2,15 @@
 
 namespace AlexanderA2\AdminBundle\Datasheet\Filter;
 
+use Symfony\Component\Form\FormBuilderInterface;
+
 interface FilterInterface
 {
-    public function getAttributes(): array;
-
     public function getShortName(): string;
 
-    public function setParameter(string $parameterName, mixed $value): self;
+    public function getFullName(): string;
 
-    public function getParameter(string $parameterName);
+    public function getDefaultParameters(): array;
 
-    public function getParameters(): array;
+    public function addForm(FormBuilderInterface $formBuilder): void;
 }

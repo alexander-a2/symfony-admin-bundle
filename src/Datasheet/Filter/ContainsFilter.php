@@ -8,6 +8,8 @@ class ContainsFilter extends AbstractFilter
 {
     public const SHORT_NAME = 'has';
 
+    public const FULL_NAME = 'contains';
+
     protected array $attributes = [
         'value' => StringDataType::class,
     ];

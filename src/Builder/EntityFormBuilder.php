@@ -31,9 +31,9 @@ class EntityFormBuilder
     ];
 
     public function __construct(
-        protected FormFactoryInterface     $formFactory,
+        protected FormFactoryInterface $formFactory,
         protected EventDispatcherInterface $eventDispatcher,
-        protected EntityHelper             $entityHelper,
+        protected EntityHelper $entityHelper,
     ) {
     }
 

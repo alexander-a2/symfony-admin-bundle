@@ -5,14 +5,11 @@ namespace AlexanderA2\AdminBundle\Datasheet;
 use AlexanderA2\AdminBundle\Datasheet\DataReader\DataReaderInterface;
 use AlexanderA2\AdminBundle\Datasheet\Filter\FilterInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 
 class Datasheet implements DatasheetInterface
 {
-    private const QUERY_KEYS = [
-        'datasheet_filters' => 'df',
-        'column_filters' => 'cf',
-    ];
-
     protected ArrayCollection $data;
 
     protected array $columns;
@@ -37,8 +34,10 @@ class Datasheet implements DatasheetInterface
 
     protected bool $debug = false;
 
+    protected FormInterface $form;
+
     public function __construct(
-        protected mixed   $source,
+        protected mixed $source,
         protected ?string $id = null,
     ) {
         if (empty($id)) {
@@ -149,11 +148,6 @@ class Datasheet implements DatasheetInterface
         return $this->columnFilters[$columnName] ?? [];
     }
 
-    public function getQueryKey(string $name): string
-    {
-        return self::QUERY_KEYS[$name];
-    }
-
     public function getTotalRecordsUnfiltered(): int
     {
         return $this->totalRecordsUnfiltered;
@@ -218,5 +212,21 @@ class Datasheet implements DatasheetInterface
     public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
+    }
+
+    public function getForm(): FormInterface
+    {
+        return $this->form;
+    }
+
+    public function setForm(FormInterface $form): self
+    {
+        $this->form = $form;
+        return $this;
+    }
+
+    public function getFormView(): FormView
+    {
+        return $this->form->createView();
     }
 }

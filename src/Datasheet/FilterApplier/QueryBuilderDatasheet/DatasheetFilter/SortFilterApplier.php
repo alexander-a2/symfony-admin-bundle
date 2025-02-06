@@ -15,8 +15,7 @@ class SortFilterApplier extends AbstractQueryBuilderDatasheetFilterApplier
 
     public function apply(FilterApplierContext $context): void
     {
-        $parameters = $context->getFilter()->getParameters();
-        $source = $context->getDataReader()->getSource();
+        $parameters = $context->getParameters();
 
         if (empty($parameters['by'])) {
             return;

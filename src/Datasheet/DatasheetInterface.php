@@ -3,9 +3,16 @@
 namespace AlexanderA2\AdminBundle\Datasheet;
 
 use AlexanderA2\AdminBundle\Datasheet\DataReader\DataReaderInterface;
+use AlexanderA2\AdminBundle\Datasheet\Filter\FilterInterface;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 
 interface DatasheetInterface
 {
+    public const FORM_KEY_DATASHEET_FILTERS = 'df';
+    public const FORM_KEY_COLUMN_FILTERS = 'cf';
+
     public function getSource(): mixed;
 
     public function getName(): string;
@@ -45,4 +52,16 @@ interface DatasheetInterface
     public function isDebug(): bool;
 
     public function setDebug(bool $debug): void;
+
+    public function addFilter(FilterInterface $filter): self;
+
+    public function getFilter(string $shortName): FilterInterface;
+
+    /** @return FilterInterface[] */
+    public function getFilters(): array;
+
+    public function addColumnFilter(string $columnName, FilterInterface $filter): self;
+
+    /** @return FilterInterface[] */
+    public function getColumnFilters(string $columnName): array;
 }

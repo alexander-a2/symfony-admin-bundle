@@ -15,7 +15,7 @@
     <div class="mt-3">
         {% for menuItem in entity_settings().menu %}
             <a href="{{ menuItem.uri }}"
-               class="btn btn-sm px-3 btn-{{ menuItem.extra('type') }}"
+               class="btn btn-{{ menuItem.extra('type') }}"
             >{{ (menuItem.extra('icon') is not empty ? ('<i class="bi bi-' ~ menuItem.extra('icon') ~ '"></i> ') : '')|raw }}{{ menuItem.name }}</a>
         {% endfor %}
         &nbsp;

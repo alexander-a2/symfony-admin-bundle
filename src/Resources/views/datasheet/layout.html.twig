@@ -1,73 +1,136 @@
 {% set recordsTotal = datasheet.totalRecordsFiltered %}
-{% set recordsPerPage = datasheet.filter('pgn').parameter('recordsPerPage') %}
-{% set pagesTotal = (recordsTotal / recordsPerPage)|round(0, 'ceil') %}
-{% set currentPage = datasheet.filter('pgn').parameter('currentPage') %}
 
-<div data-datasheet="{{ datasheet.name }}" data-datasheet-filters-key="{{ datasheet.queryKey('datasheet_filters') }}">
-    <div style="width:100%;overflow-x: auto;">
-        <form action="?" method="GET" data-datasheet-form="{{ datasheet.name }}">
-            <table class="table table-hover table-bordered table-hover text-secondary table-responsive bg-white"
-                   style="width:auto;">
-                <thead class="bg-secondary text-white">
-                <th class="border-bottom" style="width:30px;text-align:center;">
-                    <input type="checkbox">
-                </th>
-                {% for column in datasheet.columns %}
-                    <th class="border-bottom"
-                        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:{{ column.width }}px;"
-                        data-datasheet-column-title="{{ column.name }}"
-                    >
-                        {{ column.title }}
-                        {% if (datasheet.filter('sort').parameters['by'] ?? null) == column.name %}
-                            {{ datasheet.filter('sort').parameters['direction'] == 'asc' ? '▲' : '▼' }}
-                        {% endif %}
-                    </th>
-                {% endfor %}
-                </thead>
+<div data-datasheet="{{ datasheet.name }}"
+     data-datasheet-total-records-filtered="{{ datasheet.totalRecordsFiltered }}"
+     data-datasheet-total-records-unfiltered="{{ datasheet.totalRecordsUnfiltered }}"
+>
+    {{ form_start(datasheet.formview) }}
 
-                {% for record in datasheet.data %}
-                    <tr>
-                        <td style="width:30px;text-align:center;">
-                            <input type="checkbox">
-                        </td>
-                        {% for column in datasheet.columns %}
-                            <td>
-                                <div style="{{ column.styles }};white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-                                    {{ column.getContent(record)|raw }}
-                                </div>
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
+    {% for parameterName, parameterValue in datasheet.queryStringParameters %}
+        <input type="{{ datasheet.debug ? 'text' : 'hidden' }}" name="{{ parameterName }}"
+               value="{{ parameterValue }}">
+    {% endfor %}
 
-            <div>
-                <nav>
-                    <div class="text-muted m-2">
-                        {{ 'datasheet.filters.pagination.records_total'|trans }}: {{ recordsTotal }},
-                        {{ 'datasheet.filters.pagination.records_per_page'|trans }}: {{ recordsPerPage }},
-                        {{ 'datasheet.filters.pagination.pages_total'|trans }}: {{ pagesTotal }},
-                        {{ 'datasheet.filters.pagination.current_page'|trans }}: {{ currentPage }}
-                    </div>
-                    <ul class="pagination m-2"
-                        data-datasheet-pagination="{{ datasheet.name }}"
-                        data-datasheet-pagination-records-total="{{ recordsTotal }}"
-                        data-datasheet-pagination-records-per-page="{{ recordsPerPage }}"
-                        data-datasheet-pagination-pages-total="{{ pagesTotal }}"
-                        data-datasheet-pagination-current-page="{{ currentPage }}"
-                    >
-                    </ul>
-                </nav>
+    <div>
+        <nav>
+            <div class="text-muted m-2">
+                {{ 'datasheet.filters.pagination.records_total'|trans }}: recordsTotal ,
+                {{ 'datasheet.filters.pagination.records_per_page'|trans }}: recordsPerPage ,
+                {{ 'datasheet.filters.pagination.pages_total'|trans }}: pagesTotal ,
+                {{ 'datasheet.filters.pagination.current_page'|trans }}: currentPage
             </div>
-            {% for parameterName, parameterValue in datasheet.queryStringParameters %}
-                <input type="{{ datasheet.debug ? 'text' : 'hidden' }}" name="{{ parameterName }}"
-                       value="{{ parameterValue }}">
-            {% endfor %}
-
-            {% include '@Admin/datasheet/datasheet_filters.html.twig' %}
-            {{ datasheet.debug ? '<input type="submit">' : '' }}
-            {% include '@Admin/datasheet/javascript.html.twig' %}
-        </form>
+            <ul class="pagination m-2" data-datasheet-pagination></ul>
+        </nav>
     </div>
-    {{ datasheet.debug ? dump(datasheet) : '' }}
+
+    <div class="py-2">
+        <div class="input-group">
+            {#                <select class="form-select bg-light text-secondary flex-grow-0 w-auto" id="inputGroupSelect04" aria-label="Example select with button addon"> #}
+            {#                    <option selected>Search everywhere</option> #}
+            {#                    <option value="1">One</option> #}
+            {#                    <option value="2">Two</option> #}
+            {#                    <option value="3">Three</option> #}
+            {#                </select> #}
+            <button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">Search everywhere:
+            </button>
+            <ul class="dropdown-menu">
+                {#                    <li><a class="dropdown-item" href="#">Action</a></li> #}
+                {#                    <li><a class="dropdown-item" href="#">Another action</a></li> #}
+                {#                    <li><a class="dropdown-item" href="#">Something else here</a></li> #}
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-bs-toggle="collapse"
+                       data-bs-target="#datasheet-{{ datasheet.name }}-filters">
+                        Show filters
+                    </a>
+                </li>
+            </ul>
+            <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+            <button class="btn btn-outline-secondary" type="button">Button</button>
+        </div>
+
+        <div class="collapse1 mt-3" id="datasheet-{{ datasheet.name }}-filters">
+            <div class="card">
+                <div class="card-header">
+                    Filters
+                </div>
+                <div class="card-body p-2">
+                    <div class="row row-cols-6 row-cols-md-6 g-2">
+                        {% for column in datasheet.columns %}
+                            {% if datasheet.columnFilters(column.name)|length %}
+                                <div class="col">
+                                    <div class="card border-0">
+                                        <div class="card-body p-0">
+                                            <div class="input-group d-flex">
+                                                <label class="input-group-text bg-white  flex-grow-1"
+                                                       for="inputGroupSelect01">{{ column.title }}</label>
+                                                <select class="form-select flex-grow-0 w-auto"
+                                                        id="inputGroupSelect01">
+                                                    {% for filter in datasheet.columnFilters(column.name) %}
+                                                        <option>{{ filter.fullname }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                            {% for filter in datasheet.columnFilters(column.name) %}
+                                                {{ dump(filter) }}
+                                            {% endfor %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="width:100%;overflow-x: auto;">
+        <table class="table table-hover table-bordered table-hover text-secondary table-responsive bg-white"
+               style="width:auto;">
+            <thead class="bg-secondary text-white">
+            <th class="border-bottom" style="width:30px;text-align:center;">
+                <input type="checkbox">
+            </th>
+            {% for column in datasheet.columns %}
+                <th class="border-bottom"
+                    style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:{{ column.width }}px;"
+                    data-datasheet-column-title="{{ column.name }}">
+                    {{ column.title }}
+                    <span data-datasheet-column-sort-details="{{ column.name }}">1</span>
+                </th>
+            {% endfor %}
+            </thead>
+
+            {% for record in datasheet.data %}
+                <tr>
+                    <td style="width:30px;text-align:center;">
+                        <input type="checkbox">
+                    </td>
+                    {% for column in datasheet.columns %}
+                        <td>
+                            <div style="{{ column.styles }};white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                {{ column.getContent(record)|raw }}
+                            </div>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    {{ form_end(datasheet.formview) }}
+
+    {% include '@Admin/datasheet/javascript.html.twig' %}
+
+    <details>
+        <summary>Datasheet dump</summary>
+        {{ dump(datasheet) }}
+    </details>
 </div>

@@ -1,39 +1,29 @@
 <script>
     class Datasheet {
 
-        constructor(datasheet, translations) {
+        constructor(datasheet) {
             console.log('Initializing datasheet ' + datasheet.getAttribute('data-datasheet'));
             this.datasheet = {
                 container: datasheet,
                 id: datasheet.getAttribute('data-datasheet'),
-                form: datasheet.querySelector('[data-datasheet-form]'),
-                queryKey: {
-                    datasheetFilters: datasheet.getAttribute('data-datasheet-filters-key'),
-                },
-                translations: {
-                    pagination: {
-                        first_page: 'First',
-                        last_page: 'Last',
-                    }
-                }
+                form: datasheet.querySelector('form'),
+                pagination: datasheet.querySelectorAll('[data-datasheet-pagination]')[0],
             };
-
-            if (translations) {
-                this.datasheet.translations = translations;
-            }
             this.readPagination();
             this.buildPagination();
             this.initSortingControls();
+            this.showSortingDetails();
         }
 
         readPagination() {
-            this.paginationContainer = this.datasheet.container.querySelectorAll('[data-datasheet-pagination]')[0];
-            this.pagination = {
-                recordsTotal: parseInt(this.paginationContainer.getAttribute('data-datasheet-pagination-records-total')),
-                recordsPerPage: parseInt(this.paginationContainer.getAttribute('data-datasheet-pagination-records-per-page')),
-                pagesTotal: parseInt(this.paginationContainer.getAttribute('data-datasheet-pagination-pages-total')),
-                currentPage: parseInt(this.paginationContainer.getAttribute('data-datasheet-pagination-current-page')),
-            }
+            this.paginationContainer =
+                this.pagination = {
+                    totalRecordsFiltered: parseInt(this.datasheet.container.getAttribute('data-datasheet-total-records-filtered')),
+                    totalRecordsUnfiltered: parseInt(this.datasheet.container.getAttribute('data-datasheet-total-records-unfiltered')),
+                    recordsPerPage: parseInt(this.getDatasheetFilterInput('pgn', 'recordsPerPage').value),
+                    currentPage: parseInt(this.getDatasheetFilterInput('pgn', 'currentPage').value),
+                }
+            this.pagination.pagesTotal = Math.ceil(this.pagination.totalRecordsFiltered / this.pagination.recordsPerPage);
         }
 
         buildPagination() {
@@ -48,11 +38,11 @@
                 const endIndex = Math.min(currentPage + sideLength, pageButtons.length - 1);
                 pageButtons = pageButtons.slice(startIndex, endIndex + 1);
             }
-            this.paginationContainer.appendChild(this.buildPaginationButton(1, this.datasheet.translations.pagination.first_page, currentPage));
+            this.datasheet.pagination.appendChild(this.buildPaginationButton(1, 'First', currentPage));
             pageButtons.forEach((number) => {
-                this.paginationContainer.appendChild(this.buildPaginationButton(number, number, currentPage));
+                this.datasheet.pagination.appendChild(this.buildPaginationButton(number, number, currentPage));
             });
-            this.paginationContainer.appendChild(this.buildPaginationButton(pagesTotal, this.datasheet.translations.pagination.last_page, currentPage));
+            this.datasheet.pagination.appendChild(this.buildPaginationButton(pagesTotal, 'Last', currentPage));
         }
 
         buildPaginationButton(number, text, currentPage) {
@@ -89,32 +79,42 @@
             });
         }
 
+        showSortingDetails() {
+            let currentSortBy = this.getDatasheetFilterInput('sort', 'by').value;
+            if (currentSortBy === '') {
+                return;
+            }
+            let currentSortDirection = this.getDatasheetFilterInput('sort', 'direction').value === 'desc' ? 'desc' : 'asc';
+            this.datasheet.container.querySelectorAll('[data-datasheet-column-sort-details]').forEach((element) => {
+                if (element.attributes['data-datasheet-column-sort-details'].value === currentSortBy) {
+                    element.innerHTML = currentSortDirection === 'asc' ? ' &#x25B2;' : ' &#x25BC;';
+                } else {
+                    element.innerHTML = '';
+                }
+            });
+
+        }
+
         onSortChange(desiredSortBy) {
             let currentSortBy = this.getDatasheetFilterInput('sort', 'by').value;
             let currentSortDirection = this.getDatasheetFilterInput('sort', 'direction').value === 'desc' ? 'desc' : 'asc';
             let desiredSortDirection = currentSortBy === desiredSortBy ? (currentSortDirection === 'asc' ? 'desc' : 'asc') : 'asc';
             this.getDatasheetFilterInput('sort', 'by').value = desiredSortBy;
             this.getDatasheetFilterInput('sort', 'direction').value = desiredSortDirection;
+            // Pagination reset when sorting changes
+            this.getDatasheetFilterInput('pgn', 'currentPage').value = 1;
+            this.showSortingDetails();
             this.datasheet.form.submit();
         }
 
         getDatasheetFilterInput(filterName, parameterName) {
-            let inputName = this.datasheet.id + '[' + [
-                this.datasheet.queryKey.datasheetFilters,
-                filterName,
-                parameterName,
-            ].join('][') + ']';
-
-            return this.datasheet.form.querySelector('input[name="' + inputName + '"]');
+            let inputName = 'form[' + this.datasheet.id + '][df][' + filterName + '][' + parameterName + ']';
+            return this.datasheet.form.querySelector('[name="' + inputName + '"]');
         }
     }
 
     document
         .querySelectorAll('[data-datasheet]')
-        .forEach(element => new Datasheet(element, {
-            'pagination': {
-                'first_page': 'First',
-                'last_page': 'Last',
-            }
-        }));
+        .forEach(element => new Datasheet(element));
+
 </script>

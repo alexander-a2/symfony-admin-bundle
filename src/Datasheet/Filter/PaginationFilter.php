@@ -2,19 +2,32 @@
 
 namespace AlexanderA2\AdminBundle\Datasheet\Filter;
 
-use AlexanderA2\AdminBundle\Datasheet\DataType\IntegerDataType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class PaginationFilter extends AbstractFilter
 {
     public const SHORT_NAME = 'pgn';
 
-    protected array $attributes = [
-        'recordsPerPage' => IntegerDataType::class,
-        'currentPage' => IntegerDataType::class,
-    ];
+    public const FULL_NAME = 'pagination';
 
-    protected array $parameters = [
-        'recordsPerPage' => 10,
-        'currentPage' => 1,
-    ];
+    public function getDefaultParameters(): array
+    {
+        return [
+            'recordsPerPage' => 10,
+            'currentPage' => 1,
+        ];
+    }
+
+    public function addForm(FormBuilderInterface $formBuilder): void
+    {
+        $formBuilder->add('recordsPerPage', IntegerType::class, [
+            'label' => 'Records per page',
+            'required' => false,
+        ]);
+        $formBuilder->add('currentPage', IntegerType::class, [
+            'label' => 'Current page',
+            'required' => false,
+        ]);
+    }
 }

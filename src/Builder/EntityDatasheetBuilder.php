@@ -37,6 +37,7 @@ class EntityDatasheetBuilder
             $source = $this->entityManager->getRepository($entityFqcn);
         }
         $datasheet = new Datasheet($source);
+        $datasheet->setDebug(true);
 
         // Decorate fields
         foreach ($this->entityHelper->getEntityFields($entityFqcn) as $fieldName => $fieldType) {

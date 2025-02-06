@@ -17,24 +17,22 @@ use AlexanderA2\AdminBundle\Datasheet\Resolver\ColumnBuilderResolver;
 use AlexanderA2\AdminBundle\Datasheet\Resolver\DataReaderResolver;
 use AlexanderA2\AdminBundle\Datasheet\Resolver\FilterApplierResolver;
 use AlexanderA2\AdminBundle\Datasheet\Event\DatasheetBuildEvent;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Symfony\Contracts\Service\Attribute\Required;
 
 class DatasheetBuilder
 {
     public function __construct(
-        protected DataReaderResolver    $dataReaderResolver,
+        protected DataReaderResolver $dataReaderResolver,
         protected ColumnBuilderResolver $columnBuilderResolver,
         protected FilterApplierResolver $filterApplierResolver,
+        protected FormFactoryInterface $formFactory,
+        protected EventDispatcherInterface $eventDispatcher,
+        protected RequestStack $requestStack,
     ) {
-    }
-
-    protected EventDispatcherInterface $eventDispatcher;
-
-    #[Required]
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
-    {
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function build(DatasheetInterface $datasheet, array $parameters = []): DatasheetInterface
@@ -47,6 +45,7 @@ class DatasheetBuilder
         $this->removeColumns($datasheet);
         $this->attachDatasheetFilters($datasheet);
         $this->attachColumnFilters($datasheet);
+        $this->buildForm($datasheet);
         $this->fillFiltersWithRequestedParams($datasheet, $parameters);
         $this->buildUnfilteredTotals($datasheet);
         $this->applyFilters($datasheet);
@@ -54,6 +53,32 @@ class DatasheetBuilder
         $this->readData($datasheet);
 
         return $event->getDatasheet();
+    }
+
+    protected function buildForm(DatasheetInterface $datasheet): void
+    {
+        $rootFormBuilder = $this->formFactory->createBuilder(FormType::class, [
+            'csrf_protection' => false,
+            'method' => Request::METHOD_GET,
+        ]);
+        $datasheetFormBuilder = $rootFormBuilder
+            ->add($datasheet->getName(), FormType::class)
+            ->get($datasheet->getName());
+        $datasheetFilters = $datasheetFormBuilder
+            ->add(DatasheetInterface::FORM_KEY_DATASHEET_FILTERS, FormType::class)
+            ->get(DatasheetInterface::FORM_KEY_DATASHEET_FILTERS);
+
+        foreach ($datasheet->getFilters() as $filter) {
+            $filter->addForm($datasheetFilters
+                ->add($filter->getShortName(), FormType::class, [
+                    'data' => $filter->getDefaultParameters(),
+                ])
+                ->get($filter->getShortName())
+            );
+        }
+        $form = $rootFormBuilder->getForm();
+        $form->handleRequest($this->requestStack->getMainRequest());
+        $datasheet->setForm($form);
     }
 
     protected function resolveDataReader(DatasheetInterface $datasheet): void
@@ -115,27 +140,6 @@ class DatasheetBuilder
 
     protected function fillFiltersWithRequestedParams(DatasheetInterface $datasheet, array $parameters = []): void
     {
-        foreach ($datasheet->getFilters() as $filter) {
-            foreach ($filter->getAttributes() as $attributeName => $attributeDataType) {
-                // todo: validate/filter data type
-                if (isset($parameters[$datasheet->getQueryKey('datasheet_filters')][$filter->getShortName()][$attributeName])) {
-                    $value = $parameters[$datasheet->getQueryKey('datasheet_filters')][$filter->getShortName()][$attributeName];
-                    $filter->setParameter($attributeName, $value);
-                }
-            }
-        }
-
-        foreach ($datasheet->getColumns() as $column) {
-            foreach ($datasheet->getColumnFilters($column->getName()) as $filter) {
-                foreach ($filter->getAttributes() as $attributeName => $attributeDataType) {
-                    // todo: validate/filter data type
-                    if (isset($parameters[$datasheet->getQueryKey('column_filters')][$column->getName()][$filter->getShortName()][$attributeName])) {
-                        $value = $parameters[$datasheet->getQueryKey('column_filters')][$column->getName()][$filter->getShortName()][$attributeName];
-                        $filter->setParameter($attributeName, $value);
-                    }
-                }
-            }
-        }
     }
 
     protected function buildUnfilteredTotals(DatasheetInterface $datasheet): void
@@ -145,18 +149,29 @@ class DatasheetBuilder
 
     protected function applyFilters(DatasheetInterface $datasheet): void
     {
+        $formData = $datasheet->getForm()->getData()[$datasheet->getName()] ?? [];
         foreach ($datasheet->getFilters() as $filter) {
-            $context = new FilterApplierContext($datasheet->getDataReader(), $filter);
+            $filterParameters = $formData[DatasheetInterface::FORM_KEY_DATASHEET_FILTERS][$filter->getShortName()] ?? $filter->getDefaultParameters();
 
-            /** @var FilterApplierInterface $filterApplier */
+            if (empty($filterParameters)) {
+                continue;
+            }
+            $context = new FilterApplierContext($datasheet->getDataReader(), $filter, $filterParameters);
             $this->filterApplierResolver
                 ->resolve($context)
                 ->apply($context);
         }
 
+        return;
+
         foreach ($datasheet->getColumns() as $column) {
             foreach ($datasheet->getColumnFilters($column->getName()) as $filter) {
-                $context = new FilterApplierContext($datasheet->getDataReader(), $filter, $column);
+                $context = new FilterApplierContext(
+                    $datasheet->getDataReader(),
+                    $filter,
+                    $formData[DatasheetInterface::FORM_KEY_DATASHEET_FILTERS][$filter->getShortName()] ?? [],
+                    $column,
+                );
 
                 /** @var FilterApplierInterface $filterApplier */
                 $this->filterApplierResolver

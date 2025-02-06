@@ -9,8 +9,9 @@ use AlexanderA2\AdminBundle\Datasheet\Filter\FilterInterface;
 class FilterApplierContext
 {
     public function __construct(
-        protected DataReaderInterface       $dataReader,
-        protected FilterInterface           $filter,
+        protected DataReaderInterface $dataReader,
+        protected FilterInterface $filter,
+        protected array $parameters = [],
         protected ?DatasheetColumnInterface $datasheetColumn = null,
     ) {
     }
@@ -28,5 +29,10 @@ class FilterApplierContext
     public function getDatasheetColumn(): ?DatasheetColumnInterface
     {
         return $this->datasheetColumn;
+    }
+
+    public function getParameters(): array
+    {
+        return $this->parameters;
     }
 }
