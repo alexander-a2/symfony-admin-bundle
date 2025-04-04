@@ -148,6 +148,17 @@ class Datasheet implements DatasheetInterface
         return $this->columnFilters[$columnName] ?? [];
     }
 
+    public function getColumnFilter(string $columnName, string $filterName): ?FilterInterface
+    {
+        foreach ($this->getColumnFilters($columnName) as $filter) {
+            if ($filter->getShortName() === $filterName) {
+                return $filter;
+            }
+        }
+
+        return null;
+    }
+
     public function getTotalRecordsUnfiltered(): int
     {
         return $this->totalRecordsUnfiltered;

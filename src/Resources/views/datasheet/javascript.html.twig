@@ -13,6 +13,7 @@
             this.buildPagination();
             this.initSortingControls();
             this.showSortingDetails();
+            this.initFilterSwitchers();
         }
 
         readPagination() {
@@ -110,6 +111,34 @@
         getDatasheetFilterInput(filterName, parameterName) {
             let inputName = 'form[' + this.datasheet.id + '][df][' + filterName + '][' + parameterName + ']';
             return this.datasheet.form.querySelector('[name="' + inputName + '"]');
+        }
+
+        initFilterSwitchers() {
+            const switchers = this.datasheet.container.querySelectorAll('[data-datasheet-column-filter-switcher]');
+
+            switchers.forEach(selectEl => {
+                const column = selectEl.getAttribute('data-datasheet-column-filter-switcher');
+
+                const updateVisibility = () => {
+                    const selected = selectEl.value;
+                    console.log(selected);
+                    console.log('dsb2e_cf_filter_container_firstName_eq');
+                    console.log(`${column}_`);
+                    this.datasheet.container.querySelectorAll(`[id^="${column}_"]`).forEach(div => {
+                        div.style.display = 'none';
+                    });
+                    console.log(`#${column}_${selected}`);
+                    const targetDiv = this.datasheet.container.querySelector(`#${column}_${selected}`);
+                    if (targetDiv) {
+                        targetDiv.style.display = 'block';
+                    }
+                };
+
+                selectEl.addEventListener('change', updateVisibility);
+
+                // Trigger once on load
+                updateVisibility();
+            });
         }
     }
 

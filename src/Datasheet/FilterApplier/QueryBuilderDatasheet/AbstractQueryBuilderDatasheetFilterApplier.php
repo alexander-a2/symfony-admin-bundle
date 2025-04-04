@@ -16,4 +16,14 @@ abstract class AbstractQueryBuilderDatasheetFilterApplier implements FilterAppli
         return $context->getDataReader() instanceof QueryBuilderDataReader
             && get_class($context->getFilter()) === static::SUPPORTED_FILTER_CLASS;
     }
+
+    protected function getUniqueDqlParameterName(FilterApplierContext $context, string $parameterName = 'value'): string
+    {
+        return sprintf(
+            '%sFilter%s%s',
+            $context->getDatasheetColumn()->getName(),
+            mb_ucfirst($context->getFilter()->getFullName()),
+            ucfirst($parameterName),
+        );
+    }
 }

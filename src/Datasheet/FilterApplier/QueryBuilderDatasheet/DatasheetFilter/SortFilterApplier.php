@@ -9,9 +9,9 @@ use AlexanderA2\AdminBundle\Datasheet\Helper\QueryBuilderHelper;
 
 class SortFilterApplier extends AbstractQueryBuilderDatasheetFilterApplier
 {
-    public const SUPPORTED_FILTER_CLASS = SortFilter::class;
-    protected const DIRECTION_ASC = 'asc';
-    protected const DIRECTION_DESC = 'desc';
+    public const string SUPPORTED_FILTER_CLASS = SortFilter::class;
+    protected const string DIRECTION_ASC = 'asc';
+    protected const string DIRECTION_DESC = 'desc';
 
     public function apply(FilterApplierContext $context): void
     {

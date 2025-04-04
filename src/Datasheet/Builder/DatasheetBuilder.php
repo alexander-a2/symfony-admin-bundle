@@ -17,6 +17,7 @@ use AlexanderA2\AdminBundle\Datasheet\Resolver\ColumnBuilderResolver;
 use AlexanderA2\AdminBundle\Datasheet\Resolver\DataReaderResolver;
 use AlexanderA2\AdminBundle\Datasheet\Resolver\FilterApplierResolver;
 use AlexanderA2\AdminBundle\Datasheet\Event\DatasheetBuildEvent;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,42 +44,14 @@ class DatasheetBuilder
         $this->buildColumns($datasheet);
         $this->updateCustomizedColumns($datasheet);
         $this->removeColumns($datasheet);
-        $this->attachDatasheetFilters($datasheet);
-        $this->attachColumnFilters($datasheet);
+        $this->attachFilters($datasheet);
         $this->buildForm($datasheet);
-        $this->fillFiltersWithRequestedParams($datasheet, $parameters);
         $this->buildUnfilteredTotals($datasheet);
         $this->applyFilters($datasheet);
         $this->buildFilteredTotals($datasheet);
         $this->readData($datasheet);
 
         return $event->getDatasheet();
-    }
-
-    protected function buildForm(DatasheetInterface $datasheet): void
-    {
-        $rootFormBuilder = $this->formFactory->createBuilder(FormType::class, [
-            'csrf_protection' => false,
-            'method' => Request::METHOD_GET,
-        ]);
-        $datasheetFormBuilder = $rootFormBuilder
-            ->add($datasheet->getName(), FormType::class)
-            ->get($datasheet->getName());
-        $datasheetFilters = $datasheetFormBuilder
-            ->add(DatasheetInterface::FORM_KEY_DATASHEET_FILTERS, FormType::class)
-            ->get(DatasheetInterface::FORM_KEY_DATASHEET_FILTERS);
-
-        foreach ($datasheet->getFilters() as $filter) {
-            $filter->addForm($datasheetFilters
-                ->add($filter->getShortName(), FormType::class, [
-                    'data' => $filter->getDefaultParameters(),
-                ])
-                ->get($filter->getShortName())
-            );
-        }
-        $form = $rootFormBuilder->getForm();
-        $form->handleRequest($this->requestStack->getMainRequest());
-        $datasheet->setForm($form);
     }
 
     protected function resolveDataReader(DatasheetInterface $datasheet): void
@@ -122,14 +95,11 @@ class DatasheetBuilder
         }
     }
 
-    protected function attachDatasheetFilters(DatasheetInterface $datasheet): void
+    protected function attachFilters(DatasheetInterface $datasheet): void
     {
         $datasheet->addFilter(new PaginationFilter());
         $datasheet->addFilter(new SortFilter());
-    }
 
-    protected function attachColumnFilters(DatasheetInterface $datasheet): void
-    {
         foreach ($datasheet->getColumns() as $column) {
             /** @var FilterInterface $filter */
             foreach (call_user_func([$column->getDataType(), 'getFilters']) as $filter) {
@@ -138,8 +108,78 @@ class DatasheetBuilder
         }
     }
 
-    protected function fillFiltersWithRequestedParams(DatasheetInterface $datasheet, array $parameters = []): void
+    protected function buildForm(DatasheetInterface $datasheet): void
     {
+        $rootFormBuilder = $this->formFactory->createBuilder(FormType::class, [
+            'csrf_protection' => false,
+            'method' => Request::METHOD_GET,
+        ]);
+
+        $datasheetFormBuilder = $rootFormBuilder
+            ->add($datasheet->getName(), FormType::class)
+            ->get($datasheet->getName());
+
+        $datasheetFiltersFormBuilder = $datasheetFormBuilder
+            ->add(DatasheetInterface::FORM_KEY_DATASHEET_FILTERS, FormType::class)
+            ->get(DatasheetInterface::FORM_KEY_DATASHEET_FILTERS);
+
+        $columnFiltersFormBuilder = $datasheetFormBuilder
+            ->add(DatasheetInterface::FORM_KEY_COLUMN_FILTERS, FormType::class)
+            ->get(DatasheetInterface::FORM_KEY_COLUMN_FILTERS);
+
+        foreach ($datasheet->getFilters() as $filter) {
+            $filter->addForm(
+                $datasheetFiltersFormBuilder
+                    ->add($filter->getShortName(), FormType::class, [
+                        'data' => $filter->getDefaultParameters(),
+                    ])
+                    ->get($filter->getShortName())
+            );
+        }
+
+        foreach ($datasheet->getColumns() as $column) {
+            foreach ($datasheet->getColumnFilters($column->getName()) as $filter) {
+                if (!$columnFiltersFormBuilder->has($column->getName())) {
+                    $columnFiltersFormBuilder->add($column->getName(), FormType::class);
+                }
+                $filter->addForm(
+                    $columnFiltersFormBuilder
+                        ->get($column->getName())
+                        ->add($filter->getShortName(), FormType::class, [
+                            'data' => $filter->getDefaultParameters(),
+                        ])
+                        ->get($filter->getShortName())
+                );
+            }
+
+            // If column has any filters — add selector for this filter
+            if (!empty($datasheet->getColumnFilters($column->getName()))) {
+                $selectorValues = array_combine(
+                    array_map(
+                        fn(FilterInterface $filter) => $filter->getFullName(),
+                        $datasheet->getColumnFilters($column->getName())
+                    ),
+                    array_map(
+                        fn(FilterInterface $filter) => $filter->getShortName(),
+                        $datasheet->getColumnFilters($column->getName())
+                    )
+                );
+                $selectorValues = array_merge(['All' => ''], $selectorValues);
+                $columnFiltersFormBuilder
+                    ->get($column->getName())
+                    ->add('selector', ChoiceType::class, [
+                        'required' => false,
+                        'attr' => [
+                            'class' => 'form-select form-select-sm',
+                            'data-datasheet-column-filter-switcher' => $datasheet->getName() . '_cf_filter_container_' . $column->getName(),
+                        ],
+                        'choices' => $selectorValues,
+                    ]);
+            }
+        }
+        $form = $rootFormBuilder->getForm();
+        $form->handleRequest($this->requestStack->getMainRequest());
+        $datasheet->setForm($form);
     }
 
     protected function buildUnfilteredTotals(DatasheetInterface $datasheet): void
@@ -150,6 +190,7 @@ class DatasheetBuilder
     protected function applyFilters(DatasheetInterface $datasheet): void
     {
         $formData = $datasheet->getForm()->getData()[$datasheet->getName()] ?? [];
+
         foreach ($datasheet->getFilters() as $filter) {
             $filterParameters = $formData[DatasheetInterface::FORM_KEY_DATASHEET_FILTERS][$filter->getShortName()] ?? $filter->getDefaultParameters();
 
@@ -157,27 +198,24 @@ class DatasheetBuilder
                 continue;
             }
             $context = new FilterApplierContext($datasheet->getDataReader(), $filter, $filterParameters);
-            $this->filterApplierResolver
-                ->resolve($context)
-                ->apply($context);
+            $this->filterApplierResolver->resolve($context)->apply($context);
         }
 
-        return;
-
         foreach ($datasheet->getColumns() as $column) {
-            foreach ($datasheet->getColumnFilters($column->getName()) as $filter) {
-                $context = new FilterApplierContext(
-                    $datasheet->getDataReader(),
-                    $filter,
-                    $formData[DatasheetInterface::FORM_KEY_DATASHEET_FILTERS][$filter->getShortName()] ?? [],
-                    $column,
-                );
+            $appliedFilter = $formData[DatasheetInterface::FORM_KEY_COLUMN_FILTERS][$column->getName()]['selector'] ?? null;
 
-                /** @var FilterApplierInterface $filterApplier */
-                $this->filterApplierResolver
-                    ->resolve($context)
-                    ->apply($context);
+            if (empty($appliedFilter)) {
+                continue;
             }
+            $filter = $datasheet->getColumnFilter($column->getName(), $appliedFilter);
+            $context = new FilterApplierContext(
+                $datasheet->getDataReader(),
+                $filter,
+                $formData[DatasheetInterface::FORM_KEY_COLUMN_FILTERS][$column->getName()][$filter->getShortName()] ?? [],
+                $column,
+            );
+            /** @var FilterApplierInterface $filterApplier */
+            $this->filterApplierResolver->resolve($context)->apply($context);
         }
     }
 

@@ -2,15 +2,22 @@
 
 namespace AlexanderA2\AdminBundle\Datasheet\Filter;
 
-use AlexanderA2\AdminBundle\Datasheet\DataType\StringDataType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class EqualsFilter extends AbstractFilter
 {
-    public const FULL_NAME = 'equals';
+    public const string FULL_NAME = 'equals';
 
-    public const SHORT_NAME = 'eq';
+    public const string SHORT_NAME = 'eq';
 
-    protected array $attributes = [
-        'value' => StringDataType::class,
-    ];
+    public function addForm(FormBuilderInterface $formBuilder): void
+    {
+        $formBuilder->add('value', TextType::class, [
+            'required' => false,
+            'attr' => [
+                'class' => 'form-control form-control-sm',
+            ],
+        ]);
+    }
 }
