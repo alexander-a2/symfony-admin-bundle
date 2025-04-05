@@ -169,10 +169,6 @@ class DatasheetBuilder
                     ->get($column->getName())
                     ->add('selector', ChoiceType::class, [
                         'required' => false,
-                        'attr' => [
-                            'class' => 'form-select form-select-sm',
-                            'data-datasheet-column-filter-switcher' => $datasheet->getName() . '_cf_filter_container_' . $column->getName(),
-                        ],
                         'choices' => $selectorValues,
                     ]);
             }

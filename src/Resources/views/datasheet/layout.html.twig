@@ -7,107 +7,29 @@
     {{ form_start(datasheet.formview) }}
 
     {% for parameterName, parameterValue in datasheet.queryStringParameters %}
-        <input type="{{ datasheet.debug ? 'text' : 'hidden' }}" name="{{ parameterName }}"
-               value="{{ parameterValue }}">
+        <input type="{{ datasheet.debug ? 'text' : 'hidden' }}" name="{{ parameterName }}" value="{{ parameterValue }}">
     {% endfor %}
 
-    <div>
-        <nav>
-            <div class="text-muted m-2">
-                {{ 'datasheet.filters.pagination.records_total'|trans }}: recordsTotal ,
-                {{ 'datasheet.filters.pagination.records_per_page'|trans }}: recordsPerPage ,
-                {{ 'datasheet.filters.pagination.pages_total'|trans }}: pagesTotal ,
-                {{ 'datasheet.filters.pagination.current_page'|trans }}: currentPage
-            </div>
-            <ul class="pagination m-2" data-datasheet-pagination></ul>
-        </nav>
-    </div>
-
-    <div class="py-2">
-        <div class="input-group">
-            {#                <select class="form-select bg-light text-secondary flex-grow-0 w-auto" id="inputGroupSelect04" aria-label="Example select with button addon"> #}
-            {#                    <option selected>Search everywhere</option> #}
-            {#                    <option value="1">One</option> #}
-            {#                    <option value="2">Two</option> #}
-            {#                    <option value="3">Three</option> #}
-            {#                </select> #}
-            <button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">Search everywhere:
-            </button>
-            <ul class="dropdown-menu">
-                {#                    <li><a class="dropdown-item" href="#">Action</a></li> #}
-                {#                    <li><a class="dropdown-item" href="#">Another action</a></li> #}
-                {#                    <li><a class="dropdown-item" href="#">Something else here</a></li> #}
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#" data-bs-toggle="collapse"
-                       data-bs-target="#datasheet-{{ datasheet.name }}-filters">
-                        Show filters
-                    </a>
-                </li>
-            </ul>
-            <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
-            <button class="btn btn-outline-secondary" type="submit">Button</button>
-            {#            <button class="btn btn-outline-secondary" type="button">Button</button> #}
+    <div class="row">
+        <div class="col-6">
+            <nav>
+                <div class="text-muted m-2">
+                    {{ 'datasheet.filters.pagination.records_total'|trans }}: recordsTotal ,
+                    {{ 'datasheet.filters.pagination.records_per_page'|trans }}: recordsPerPage ,
+                    {{ 'datasheet.filters.pagination.pages_total'|trans }}: pagesTotal ,
+                    {{ 'datasheet.filters.pagination.current_page'|trans }}: currentPage
+                </div>
+                <ul class="pagination" data-datasheet-pagination></ul>
+            </nav>
         </div>
-
-{#                <div class="collapse1 mt-3" id="datasheet-{{ datasheet.name }}-filters">#}
-{#                    <div class="card">#}
-{#                        <div class="card-header">#}
-{#                            Filters#}
-{#                        </div>#}
-{#                        <div class="card-body p-2">#}
-{#                            <div class="row row-cols-6 row-cols-md-6 g-2">#}
-{#                                {% for column in datasheet.columns %}#}
-{#                                    {% if datasheet.columnFilters(column.name)|length %}#}
-{#                                        {% set columnFilterPrefix = datasheet.name ~ '_cf' %}#}
-{#                                        <div class="col">#}
-{#                                            <div class="card border-0">#}
-{#                                                <div class="card-body p-0">#}
-{#                                                    <div class="form-check">#}
-{#                                                        <input type="checkbox"#}
-{#                                                               class="form-check-input"#}
-{#                                                               value=""#}
-{#                                                               id="{{ columnFilterPrefix }}_enabler_{{ column.name }}"#}
-{#                                                               data-bs-toggle="collapse"#}
-{#                                                               data-bs-target="#{{ columnFilterPrefix }}_filters_container_{{ column.name }}"#}
-{#                                                        >#}
-{#                                                        <label class="form-check-label"#}
-{#                                                               for="{{ columnFilterPrefix }}_enabler_{{ column.name }}"#}
-{#                                                        >#}
-{#                                                            {{ column.title }}#}
-{#                                                        </label>#}
-{#                                                    </div>#}
-{#                                                    <div class="collapse"#}
-{#                                                         id="{{ columnFilterPrefix }}_filters_container_{{ column.name }}"#}
-{#                                                    >#}
-{#                                                        <select class="form-select"#}
-{#                                                                data-datasheet-column-filter-switcher="{{ columnFilterPrefix }}_filter_container_{{ column.name }}"#}
-{#                                                        >#}
-{#                                                            {% for filter in datasheet.columnFilters(column.name) %}#}
-{#                                                                <option value="{{ filter.shortName }}">{{ filter.fullname }}</option>#}
-{#                                                            {% endfor %}#}
-{#                                                        </select>#}
-
-{#                                                            </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
+        <div class="col-6 text-end">
+            <input type="submit" value="Apply filters" class="btn btn-primary">
+        </div>
     </div>
 
-{#    {{ form_widget(datasheet.formview[datasheet.name]['cf']) }}#}
 
     <div style="width:100%;overflow-x: auto;">
-        <table class="table table-hover table-bordered table-hover text-secondary table-responsive bg-white"
-               style="width:auto;">
+        <table class="table table-hover table-bordered text-secondary table-responsive bg-white" style="width:auto;">
             <thead class="bg-secondary text-white">
             <th class="border-bottom" style="width:30px;text-align:center;">
                 <input type="checkbox">
@@ -128,17 +50,16 @@
                     <td class="p-1">
                         {% if datasheet.columnFilters(column.name)|length %}
                             {% set columnFilterPrefix = datasheet.name ~ '_cf' %}
-{#                            <select class="form-select form-select-sm"#}
-{#                                    data-datasheet-column-filter-switcher="{{ columnFilterPrefix }}_filter_container_{{ column.name }}"#}
-{#                            >#}
-{#                                <option value="">All</option>#}
-{#                                {% for filter in datasheet.columnFilters(column.name) %}#}
-{#                                    <option value="{{ filter.shortName }}">{{ filter.fullname }}</option>#}
-{#                                {% endfor %}#}
-{#                            </select>#}
-                            {{ form_widget(datasheet.formview[datasheet.name]['cf'][column.name]['selector']) }}
+                            {{ form_widget(
+                                datasheet.formview[datasheet.name]['cf'][column.name]['selector'],
+                                {'attr': {
+                                    'class' : 'text-secondary form-select form-select-sm',
+                                    'data-datasheet-column-filter-switcher': datasheet.name() ~ '_cf_filter_container_' ~ column.name
+                                }}
+                            ) }}
                             {% for filter in datasheet.columnFilters(column.name) %}
-                                <div class="mt-1" id="{{ columnFilterPrefix }}_filter_container_{{ column.name }}_{{ filter.shortName }}">
+                                <div class="mt-1"
+                                     id="{{ columnFilterPrefix }}_filter_container_{{ column.name }}_{{ filter.shortName }}">
                                     {% for child in datasheet.formview[datasheet.name]['cf'][column.name][filter.shortName] %}
                                         {{ form_widget(child) }}
                                     {% endfor %}
@@ -166,20 +87,21 @@
         </table>
     </div>
 
-    {% for child in datasheet.formview[datasheet.name]['df'] %}
-        {{ form_widget(child) }}
-    {% endfor %}
+    <div style="display:none">
+        {% for child in datasheet.formview[datasheet.name]['df'] %}
+            {{ form_widget(child) }}
+        {% endfor %}
+    </div>
 
-        {{ '</form>' }}
-    {#    {% do datasheet.formview[datasheet.name]['cf'].setRendered(true) %} #}
-    {#    {{ dump(datasheet.formview[datasheet.name]['cf']) }} #}
-
-{#    {{ form_end(datasheet.formview) }}#}
+    {# Because form_end() will render all filter fields, since they somehow still not rendered on that point #}
+    {{ '</form>' }}
 
     {% include '@Admin/datasheet/javascript.html.twig' %}
 
-    <details>
-        <summary>Datasheet dump</summary>
-        {{ dump(datasheet) }}
-    </details>
+    {% if datasheet.debug %}
+        <details>
+            <summary>Datasheet dump</summary>
+            {{ dump(datasheet) }}
+        </details>
+    {% endif %}
 </div>
