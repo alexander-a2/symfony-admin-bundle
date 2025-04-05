@@ -9,10 +9,10 @@
 {% block item %}
     {% if item.parent.parent %}
         {# Level-2 items #}
-        <div class="px-1"><a href="{{ item.uri }}" class="btn mx-3 px-3 py-1 shadow-none text-truncate w-auto mw-100">{{ item.label|trans }}</a></div>
+        <div class="px-1"><a href="{{ item.uri }}" class="btn mx-3 px-3 py-1 shadow-none text-light text-truncate w-auto mw-100">{{ item.label|trans }}</a></div>
     {% else %}
         {# Level-1 items #}
-        <div class="mt-3 px-2 py-1 rounded"><b><i class="bi bi-{{  item.extra('icon') ?? 'dot' }} mx-1 text-truncate w-auto mw-100"></i> {{ item.label|trans }}</b></div>
+        <div class="mt-3 px-2 py-2 rounded"><b><i class="bi bi-{{  item.extra('icon') ?? 'dot' }} mx-1 text-truncate w-auto mw-100"></i> {{ item.label|trans }}</b></div>
         {{ block('list') }}
     {% endif %}
 {% endblock %}

@@ -57,7 +57,7 @@
     <div class="row flex-grow-sm-1 flex-grow-0 w-100 no-gutters">
         <aside id="collapseExample"
                class="collapse col-sm-5 col-md-4 col-lg-3 col-xl-3 col-xxl-2 d-sm-block flex-grow-sm-1 flex-shrink-1 flex-grow-0 sticky-top pb-sm-0">
-            <div class="h-100 sticky-top {% block sidebar_classes %}bg-light border{% endblock %}">
+            <div class="h-100 sticky-top {% block sidebar_classes %}bg-dark text-light{% endblock %}">
                 {% block dashboard_sidebar %}
                     <div class="pt-5 py-2 px-2" id="sidebar-menu">
                         {{ render_menu('admin.sidebar_menu', '@Admin/menu/sidebar_menu.html.twig') }}
