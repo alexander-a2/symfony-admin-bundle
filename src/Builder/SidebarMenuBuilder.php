@@ -17,18 +17,8 @@ class SidebarMenuBuilder
     ) {
     }
 
-    public function addMenuItems(ItemInterface $menu): void
-    {
-        $menu
-            ->addChild('Home', ['route' => 'admin_home'])
-            ->setExtra('icon', 'bi bi-house-fill');
-
-        // todo: multiple strategies
-        $this->addEntitiesListToMenu($menu);
-    }
-
     /** Strategy 1 */
-    protected function addEntitiesListToMenu(ItemInterface $menu): void
+    public function addEntitiesListToMenu(ItemInterface $menu): void
     {
         $parent = $menu
             ->addChild(self::DATABASE_SECTION_NAME)

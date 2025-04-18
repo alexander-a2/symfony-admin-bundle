@@ -19,18 +19,31 @@ class AdminSidebarMenuBuildEventSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    public function onMenuBuild(MenuBuildEvent $event): void
+    public function onMenuBuildEarly(MenuBuildEvent $event): void
     {
         if ($event->getName() !== self::MENU_NAME) {
             return;
         }
-        $this->sidebarMenuBuilder->addMenuItems($event->getMenu());
+        $event->getMenu()
+            ->addChild('Home', ['route' => 'admin_home'])
+            ->setExtra('icon', 'bi bi-house-fill');
+    }
+
+    public function onMenuBuildLate(MenuBuildEvent $event): void
+    {
+        if ($event->getName() !== self::MENU_NAME) {
+            return;
+        }
+        $this->sidebarMenuBuilder->addEntitiesListToMenu($event->getMenu());
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            MenuBuildEvent::class => 'onMenuBuild',
+            MenuBuildEvent::class => [
+                ['onMenuBuildEarly', 700],
+                ['onMenuBuildLate', -700],
+            ],
         ];
     }
 }
