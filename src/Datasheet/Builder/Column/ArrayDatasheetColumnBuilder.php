@@ -21,7 +21,7 @@ class ArrayDatasheetColumnBuilder implements ColumnBuilderInterface
         $dataTypeResolver = new DataTypeResolver(
             (new DataTypeRegistry())->get(),
         );
-        $firstRow = $datasheet->getSource()[0];
+        $firstRow = $datasheet->getSource()[array_key_first($datasheet->getSource())];
 
         foreach ($firstRow as $columnName => $sampleValue) {
             $dataType = empty($sampleValue) ? ObjectDataType::class : $dataTypeResolver->guess($sampleValue);

@@ -7,3 +7,4 @@ services:
         resource: '../../'
         exclude:
             - '../src/DependencyInjection/'
+            - '../src/Datasheet/'

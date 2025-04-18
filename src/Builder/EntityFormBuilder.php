@@ -16,7 +16,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EntityFormBuilder
 {
-    private const FORM_FIELDS_MAPPING = [
+    private const array FORM_FIELDS_MAPPING = [
         'date' => DateType::class,
         'datetime' => DateTimeType::class,
         'many_to_one' => EntityType::class,
@@ -24,7 +24,7 @@ class EntityFormBuilder
         'json' => null,
     ];
 
-    private const FIELDS_NOT_FOR_EDIT = [
+    private const array FIELDS_NOT_FOR_EDIT = [
         'id',
         'createdAt',
         'updatedAt',

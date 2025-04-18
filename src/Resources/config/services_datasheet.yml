@@ -16,7 +16,7 @@ services:
 
     AlexanderA2\AdminBundle\Datasheet\Resolver\DataReaderResolver:
         bind:
-            $services: !tagged_iterator datasheet.data_reader
+            $services: !tagged_iterator 'datasheet.data_reader'
 
     AlexanderA2\AdminBundle\Datasheet\Resolver\ColumnBuilderResolver:
         bind:

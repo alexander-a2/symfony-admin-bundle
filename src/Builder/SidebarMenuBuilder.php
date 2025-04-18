@@ -9,6 +9,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 class SidebarMenuBuilder
 {
+    public const string DATABASE_SECTION_NAME = 'Database';
+
     public function __construct(
         protected EntityHelper $entityHelper,
         protected RouterInterface $router,
@@ -29,8 +31,8 @@ class SidebarMenuBuilder
     protected function addEntitiesListToMenu(ItemInterface $menu): void
     {
         $parent = $menu
-            ->addChild('Database')
-            ->setLabel('Database')
+            ->addChild(self::DATABASE_SECTION_NAME)
+            ->setLabel(self::DATABASE_SECTION_NAME)
             ->setExtra('icon', 'bi bi-grid-fill');
 
         foreach ($this->entityHelper->getEntityList() as $objectClassName) {

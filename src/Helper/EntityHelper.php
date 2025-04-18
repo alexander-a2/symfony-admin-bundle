@@ -10,10 +10,10 @@ use AlexanderA2\AdminBundle\Datasheet\DataType\IntegerDataType;
 use AlexanderA2\AdminBundle\Datasheet\DataType\ObjectDataType;
 use AlexanderA2\AdminBundle\Datasheet\DataType\ObjectsDataType;
 use AlexanderA2\AdminBundle\Datasheet\DataType\StringDataType;
+use AlexanderA2\ExtendableEntityBundle\Entity\EntityCustomField;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
-use ReflectionClass;
 
 class EntityHelper
 {
@@ -34,6 +34,10 @@ class EntityHelper
         'title',
         'label',
         'email',
+    ];
+
+    public const EXCLUDED_FROM_LISTING_ENTITIES = [
+        EntityCustomField::class,
     ];
 
     static array $entityListCached;
@@ -65,16 +69,18 @@ class EntityHelper
                 $fields[$relation['fieldName']] = self::RELATION_FIELD_TYPES[$relation['type']];
             }
         }
-        $sortedFields = [];
 
-        foreach ((new ReflectionClass($className))->getProperties() as $property) {
-            if (!array_key_exists($property->getName(), $fields)) {
-                continue;
-            }
-            $sortedFields[$property->getName()] = $fields[$property->getName()];
-        }
-
-        return $sortedFields;
+        return $fields;
+//        $sortedFields = [];
+//
+//        foreach ((new ReflectionClass($className))->getProperties() as $property) {
+//            if (!array_key_exists($property->getName(), $fields)) {
+//                continue;
+//            }
+//            $sortedFields[$property->getName()] = $fields[$property->getName()];
+//        }
+//
+//        return $sortedFields;
     }
 
     public function getFieldType(string $className, string $fieldName): string
@@ -92,10 +98,10 @@ class EntityHelper
         throw new Exception('Field not found');
     }
 
-    public function getRelationClassName(string $baseentityFqcn, string $relationFieldName): string
+    public function getRelationClassName(string $baseEntityFqcn, string $relationFieldName): string
     {
         return $this
-            ->getMetadata($baseentityFqcn)
+            ->getMetadata($baseEntityFqcn)
             ->getAssociationMapping($relationFieldName)['targetEntity'];
     }
 
@@ -129,6 +135,10 @@ class EntityHelper
                 ->getMetadataDriverImpl()
                 ->getAllClassNames();
             sort(self::$entityListCached);
+            self::$entityListCached = array_diff(
+                self::$entityListCached,
+                self::EXCLUDED_FROM_LISTING_ENTITIES,
+            );
         }
 
         return self::$entityListCached;

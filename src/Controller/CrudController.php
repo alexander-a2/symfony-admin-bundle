@@ -3,16 +3,13 @@
 namespace AlexanderA2\AdminBundle\Controller;
 
 use AlexanderA2\AdminBundle\Datasheet\Builder\DatasheetBuilder;
-use AlexanderA2\AdminBundle\Helper\StringHelper;
 use AlexanderA2\AdminBundle\Builder\EntityDatasheetBuilder;
 use AlexanderA2\AdminBundle\Builder\EntityFormBuilder;
-use AlexanderA2\AdminBundle\Builder\MenuBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 
 #[Route("crud/", name: "crud_")]

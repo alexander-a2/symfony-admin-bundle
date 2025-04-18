@@ -2,6 +2,9 @@
 
 namespace AlexanderA2\AdminBundle\Helper;
 
+use AlexanderA2\ExtendableEntityBundle\ExtendableEntity;
+use AlexanderA2\ExtendableEntityBundle\ExtendableEntityInterface;
+use Exception;
 use Throwable;
 
 class ObjectHelper
@@ -11,6 +14,11 @@ class ObjectHelper
     public static function getProperty(mixed $object, string $propertyName, $throwException = false): mixed
     {
         try {
+            if (is_object($object) && ExtendableEntity::isExtendableEntity($object) && !property_exists($object, $propertyName)) {
+                /** @var ExtendableEntityInterface $object */
+                return $object->getCustomFieldsData($propertyName) ?? null;
+            }
+
             if (is_array($object)) {
                 return $object[$propertyName];
             }
