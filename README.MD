@@ -20,9 +20,16 @@ $ composer require alexander-a2/symfony-admin-bundle
 2. Add routes to route file `./config/routes.yaml`:
 
 ```yaml
-admin: # any name could be used 
+admin: 
     resource: "@AdminBundle/Resources/config/routing.yml"
-    prefix: /admin # any preferred path to admin panel
+    prefix: /admin
+    name_prefix: admin_
+
+# override default admin index page
+admin_index:
+    path: /admin
+    # set your controller::action here
+    controller: App\Controller\Admin\AdminController::indexAction
 ```
 
 ### CRUD Example

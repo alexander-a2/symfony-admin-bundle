@@ -5,7 +5,10 @@ namespace AlexanderA2\AdminBundle\Controller;
 use AlexanderA2\AdminBundle\Datasheet\Builder\DatasheetBuilder;
 use AlexanderA2\AdminBundle\Builder\EntityDatasheetBuilder;
 use AlexanderA2\AdminBundle\Builder\EntityFormBuilder;
+use AlexanderA2\AdminBundle\Event\EntityCreatedEvent;
+use AlexanderA2\AdminBundle\Event\EntityUpdatedEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,14 +74,17 @@ class CrudController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         EntityFormBuilder $formBuilder,
+        EventDispatcherInterface $eventDispatcher,
     ): Response {
         $entityFqcn = $request->query->get('entityFqcn');
         $entityId = $request->query->get('entityId');
 
         if ($entityId) {
             $entity = $entityManager->getRepository($entityFqcn)->find($entityId);
+            $event = new EntityUpdatedEvent($entity);
         } else {
             $entity = new $entityFqcn;
+            $event = new EntityCreatedEvent($entity);
         }
         $form = $formBuilder->get($entity);
         $form->setData($entity);
@@ -90,6 +96,7 @@ class CrudController extends AbstractController
                     $entityManager->persist($entity);
                 }
                 $entityManager->flush();
+                $eventDispatcher->dispatch($event);
                 $this->addFlash('success', $entityId ? 'admin.entity.crud.record_was_updated' : 'admin.entity.crud.record_was_created');
             } catch (Throwable $exception) {
                 $this->addFlash('error', 'admin.something_went_wrong');
