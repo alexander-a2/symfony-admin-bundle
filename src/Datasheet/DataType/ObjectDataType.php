@@ -7,6 +7,7 @@ use AlexanderA2\AdminBundle\Helper\EntityHelper;
 use AlexanderA2\AdminBundle\Helper\StringHelper;
 use DateTimeInterface;
 use Exception;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Throwable;
 
 class ObjectDataType implements DataTypeInterface
@@ -40,14 +41,26 @@ class ObjectDataType implements DataTypeInterface
         }
 
         if (is_object($value)) {
+            if (method_exists($value, '__toString')) {
+                return (string) $value;
+            }
+
             try {
-                return (string)$value;
-            } catch (Throwable) {
+                $accessor = PropertyAccess::createPropertyAccessor();
+
+                foreach (EntityHelper::PRIMARY_FIELD_TYPICAL_NAMES as $key) {
+                    if ($accessor->isReadable($value, $key)) {
+                        return $accessor->getValue($value, $key);
+                    }
+                }
+            } catch (Throwable $exception) {
+                $error = $exception;
             }
 
             try {
                 return sprintf('%s #%s', StringHelper::getShortClassName($value), $value->getId());
-            } catch (Throwable) {
+            } catch (Throwable $exception) {
+                $error = $exception;
             }
 
             return StringHelper::getShortClassName($value);
